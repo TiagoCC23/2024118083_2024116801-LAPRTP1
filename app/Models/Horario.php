@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Horario extends Model
 {
-    //
+    protected $fillable = ['hora_inicio', 'hora_fim'];
+
+    public function reservas(){
+        return $this->belongsToMany(Reserva::class, 'reserva_horario', 'horario_id', 'reserva_id');
+    }
 }
