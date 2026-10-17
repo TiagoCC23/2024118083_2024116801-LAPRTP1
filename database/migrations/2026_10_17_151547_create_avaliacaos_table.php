@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('avaliacaos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedTinyInteger('nota');
+            $table->text('comentario')->nullable();
+            $table->foreignId('id_reserva')->unique()->constrained('reservas')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('salas', function (Blueprint $table) {
             $table->id();
+            $table->string('nome_numero');
+            $table->unsignedInteger('capacidade_maxima');
+            $table->enum('tipo_sala', ['Sala de Estudo', 'Laboratório', 'Sala de aula', 'Outro']);
+            $table->integer('piso');
+            $table->foreignId('edificio_id')->constrained('edificios')->cascadeOnDelete();
             $table->timestamps();
         });
     }
