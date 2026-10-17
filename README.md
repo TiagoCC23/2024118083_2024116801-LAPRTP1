@@ -79,20 +79,69 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 ---
 
 # Modelo E-R
-##### PlaceHolder só porque falta a avaliação
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTW6coEbjTMpA_HtRcMwWvyOyrIr4SBuQkfJ9taMi8wDVu1zC73X6g4_yEb&s=10">
+<img src= "LAPR_projeto.drawio.png" alt = "Modelo E-R">
 
 ---
 # Dicionário de Dados
 
----
-
-# Relações e cardinalidades
-
+## Sala:
 | Atributo | Chave | Descrição |
-| ---| --- | --- |
-| Teste | Teste | Teste |
+| --- | --- | --- |
+| id | PK | Identificador da sala |
+| nome_numero | | Nome ou número da sala |
+| capacidade_maxima | | Capacidade total da sala |
+| tipo_sala | | Identificador do tipo da sala (ex: laboratório, biblioteca...) |
+| piso | | Piso de onde a sala se encontra | 
+| edificio_id | FK | Identificador do edifício que pertence |
+
+## Utilizador:
+| Atributo | Chave | Descrição |
+| --- | --- | --- |
+| id | PK | Identificador do utilizador |
+| nome | | Nome do utilizador |
+| email | UQ | Email do utilizador |
+| password_hash | | Password em hash do utilizador |
+| tipo_user | | Tipo do utilizador (se é admin, normal ou email da ufp) |
+| tipo_sala_id | FK | Identificador da sala administrada pelo admin |
+| criado_em | | Data da criação da conta |
+| eliminado_em | | | Data da eliminação da conta |
+
+## Reserva:
+| Atributo | Chave | Descrição |
+| --- | --- | --- |
+| id |  | Identificador da reserva |
+| data | | Data da reserva |
+| quantidade_pessoas | | Quantidade de pessoas que foram adicionadas à reserva |
+| estado | | Estado em que se encontra a reserva |
+| criado_em | | Data da criação do pedido da reserva |
+| tipo_de_uso | | Exame, Trabalho de grupo, Leitura ou Outro; preenchido por todos |
+| sala_id | FK | Identificador da sala reservada |
+| utilizador_id | FK | Identificador do utilizador que fez a reserva |
+
+## Avaliação
+| Atributo | Chave | Descrição |
+| --- | --- | --- |
+| id | PK | Identificador do edifício |
+| nota | | Nome do edifício |
+| comentário | | Comentário opcional sobre a reserva |
+| id_reserva | FK | Identificador da reserva avaliada |
+
+## Edifício
+| Atributo | Chave | Descrição |
+| --- | --- | --- |
+| id | PK | Identificador do edifício |
+| nome | | Nome do edifício |
+| imagem | | Planta do edifício |
+
+## Horário
+| Atributo | Chave | Descrição |
+| --- | --- | --- |
+| id | PK | Identificador do horáro |
+| hora_inicio | | Hora do início do horário |
+| hora_fim | | Hora do fim do horário |
+
 ---
+
 
 # Regras de Negócio e restrições de Integridade
 * **Ciclo de Vida e Gestão de Conflitos.** Quando um utilizador solicita uma reserva, esta é criada com o estado ‘*pendente*’. A transição para o estado ‘*confirmada*’ ou ‘*rejeitada*’ depende de validação manual do Admin. No momento da confirmação, o sistema garante que não existem sobreposições iniciando uma transação com bloqueio de linhas (FOR UPDATE): verifica-se via JOIN com a tabela *ReservaHorario* se algum dos horários solicitados já se encontra associado a uma reserva '*confirmada*' para a mesma sala e data, rejeitando a operação em caso de conflito. 
