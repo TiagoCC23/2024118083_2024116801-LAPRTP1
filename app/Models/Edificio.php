@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Edificio extends Model
 {
-    protected $fillable = ['nome', 'siglas', 'imagem'];
+    protected $fillable = ['nome', 'sigla', 'imagem'];
 
     public function salas(){
         return $this->hasMany(Sala::class, 'edificio_id');
