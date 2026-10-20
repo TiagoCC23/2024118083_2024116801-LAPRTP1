@@ -58,20 +58,14 @@ class DatabaseSeeder extends Seeder
             'nome' => 'Funcionário Sede',
             'email' => 'admin.sede@ufp.edu.pt',
             'email_verified_at' => now(),
-            'senha' => Hash::make('secret'),
+            'senha' => Hash::make('0000'),
             'tipo_user' => 'admin',
             'edificio_id' => $edificio_Sede->id
         ]);
         $user1 = User::create([
-            'nome' => 'Rayssa Santos',
-            'email' => '2024118083@ufp.edu.pt',
-            'senha' => Hash::make('password123'),
-            'tipo_user' => 'estudante',
-        ]);
-        $user2 = User::create([
-            'nome' => 'Tiago Chousal',
-            'email' => '2024116801@ufp.edu.pt',
-            'senha' => Hash::make('67676767'),
+            'nome' => 'Teste',
+            'email' => 'teste@ufp.edu.pt',
+            'senha' => Hash::make('1234'),
             'tipo_user' => 'estudante',
         ]);
 
@@ -85,7 +79,7 @@ class DatabaseSeeder extends Seeder
             'quantidade_pessoas' => 4,
             'estado' => 'confirmada',
             'tipo_de_uso' => 'Trabalho de grupo',
-            'sala_id' => $sala3->id,
+            'sala_id' => $sala1->id,
             'utilizador_id' => $user1->id,
         ]);
 

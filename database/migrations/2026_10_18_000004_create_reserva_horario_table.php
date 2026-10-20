@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('reserva_horario', function (Blueprint $table) {
             $table->id();
             $table->foreignId('reserva_id')->constrained('reservas')->cascadeOnDelete();
+            $table->foreignId('sala_id')->constrained('salas')->cascadeOnDelete();
             $table->foreignId('horario_id')->constrained('horarios')->cascadeOnDelete();
-            $table->unique(['reserva_id', 'horario_id']);
+            $table->unique(['reserva_id', 'sala_id', 'horario_id']);
         });
     }
 
