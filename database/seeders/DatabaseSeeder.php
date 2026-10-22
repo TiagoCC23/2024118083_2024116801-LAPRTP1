@@ -83,7 +83,8 @@ class DatabaseSeeder extends Seeder
             'utilizador_id' => $user1->id,
         ]);
 
-        $reserva->horarios()->attach([$h1->id, $h2->id]);
+        // RESERVA_HORARIO
+        //$reserva_horario_1 = ;
 
         // AVALIAÇÃO
         $avaliacao = Avaliacao::create([
