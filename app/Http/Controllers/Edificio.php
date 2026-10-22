@@ -46,7 +46,7 @@ class Edificio extends Controller
      */
     public function edit(string $id)
     {
-        $edificios = \App\Models\Edificio::findOrFail($id); // ALGO DE ERRADO NÃO ESTÁ CERTO
+        $edificios = \App\Models\Edificio::findOrFail($id);
         return view('edificios.edit', compact('edificios'));
     }
 

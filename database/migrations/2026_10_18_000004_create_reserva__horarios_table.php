@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('reserva_id')->constrained('reservas')->cascadeOnDelete();
             $table->foreignId('horario_id')->constrained('horarios')->cascadeOnDelete();
             $table->unique(['reserva_id', 'horario_id']);
+            $table->timestamps();
         });
     }
 
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reserva_horario');
+        Schema::dropIfExists('reserva__horarios');
     }
 };
