@@ -16,11 +16,10 @@ return new class extends Migration
             $table->date('data');
             $table->unsignedInteger('quantidade_pessoas');
             $table->enum('estado', ['pendente', 'confirmada', 'rejeitada', 'cancelada'])->default('pendente');
-            $table->time('criado_em');
             $table->enum('tipo_de_uso', ['Exame', 'Trabalho de grupo', 'Leitura', 'Outro']);
             $table->foreignId('sala_id')->constrained('salas')->cascadeOnDelete();
             $table->foreignId('utilizador_id')->constrained('users')->cascadeOnDelete();
-            $table->timestamps();
+            $table->timestamps('criado_em');
         });
     }
 

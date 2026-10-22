@@ -20,9 +20,8 @@ return new class extends Migration
             $table->string('password_hash');
             $table->enum('tipo_user', ['estudante', 'normal', 'admin'])->default('estudante');
             $table->foreignId('edificio_id')->nullable()->constrained('edificios')->nullOnDelete();
-            $table->time('criado_em');
             $table->softDeletes('eliminado_em');
-            $table->timestamps();
+            $table->timestamps('criado_em');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
