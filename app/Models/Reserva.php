@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Reserva extends Model
 {
     use Atualizacoes;
+
     protected $casts = [
         'data' => 'date',
         'estado' => EstadoReserva::class,

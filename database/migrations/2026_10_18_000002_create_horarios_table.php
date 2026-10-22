@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->time('hora_inicio');
             $table->time('hora_fim');
+            $table->unique(['hora_inicio', 'hora_fim']);
             $table->timestamps();
         });
     }

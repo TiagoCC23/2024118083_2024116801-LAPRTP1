@@ -4,16 +4,13 @@ namespace App\Enums;
 
 enum EstadoReserva: string
 {
-    case Pendente = 'pendente';
-    case Confirmada = 'confirmada';
-    case Cancelada = 'cancelada';
+    case Pendente = 'Pendente';
+    case Confirmada = 'Confirmada';
+    case Rejeitada = 'Rejeitada';
+    case Cancelada = 'Cancelada';
 
     public function label(): string
     {
-        return match ($this) {
-            self::Pendente => 'Pendente',
-            self::Confirmada => 'Confirmada',
-            self::Cancelada => 'Cancelada',
-        };
+        return $this->value;
     }
 }
