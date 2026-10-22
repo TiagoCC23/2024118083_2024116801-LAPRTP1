@@ -15,7 +15,7 @@
     </div>
 @endif
 
-<form action="{{ route('edificio.store') }}" method="POST">
+<form action="{{ route('edificios.store') }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
     <!-- Nome do Edifício -->
     <div>

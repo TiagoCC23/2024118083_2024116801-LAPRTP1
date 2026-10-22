@@ -13,7 +13,7 @@
     </div>
 @endif
 
-<form action="{{ route('edificio.update', $edificio->id) }}" method="POST">
+<form action="{{ route('edificios.update', $edificio->id) }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
 
     @method('PUT')                      <!--Update -->

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Edificio;
+use Illuminate\Http\Request;
 
 class EdificioController extends Controller
 {
@@ -12,8 +12,8 @@ class EdificioController extends Controller
      */
     public function index()
     {
-        $edificio = Edificio::all();
-        return view('edificios.index', compact('edificio'));
+        $edificios = Edificio::all();
+        return view('edificios.index', compact('edificios'));
     }
 
     /**
