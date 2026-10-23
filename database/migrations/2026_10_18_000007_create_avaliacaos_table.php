@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('avaliacaos', function (Blueprint $table) {
+        Schema::create('avaliacoes', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('nota'); // 1 a 5
             $table->text('comentario')->nullable();

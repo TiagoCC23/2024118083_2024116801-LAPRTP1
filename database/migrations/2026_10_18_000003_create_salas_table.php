@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('salas', function (Blueprint $table) {
             $table->id();
             $table->string('nome_numero', 50); // -> pode-se colocar sem nada que ega o valor normal de VARCHAR(255)
-            $table->unsignedInteger('capacidade_maxima');
-            $table->enum('tipo_sala', ['Sala de estudo', 'Laboratório', 'Sala de aula', 'Outro']);
+            $table->unsignedSmallInteger('capacidade_maxima');
+            $table->string('tipo_sala');
             $table->integer('piso');
-            $table->foreignId('edificio_id')->constrained('edificios')->cascadeOnDelete();
+            $table->foreignId('edificio_id')->constrained('edificios')->restrictOnDelete();
             $table->unique(['edificio_id', 'nome_numero']);
             $table->timestamps();
         });

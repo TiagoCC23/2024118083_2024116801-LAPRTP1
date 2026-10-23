@@ -6,7 +6,7 @@ enum TipoDeUso: string
 {
     case SalaDeEstudo = 'Exame';
     case Laboratorio = 'Trabalho';
-    case Leitura = 'Sala de aula';
+    case Leitura = 'Leitura';
     case Outro = 'Outro';
 
     public function label(): string

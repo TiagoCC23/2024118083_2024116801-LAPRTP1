@@ -27,7 +27,7 @@ class Reserva extends Model
 
     public function utilizador(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Utilizador::class);
     }
 
     public function horarios(): BelongsToMany
