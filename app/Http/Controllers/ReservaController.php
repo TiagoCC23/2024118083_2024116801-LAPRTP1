@@ -3,23 +3,32 @@
 namespace App\Http\Controllers;
 use App\Enums\TipoDeUso;
 use App\Models\Reserva;
+use App\Models\Sala;
 use App\Enums\EstadoReserva;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use phpDocumentor\Reflection\Types\String_;
 
 class ReservaController extends Controller
 {
 
     private function rules(?Reserva $reserva = null): array
     {
-        return[
-            'data' => 'required|date',
-            'quantidade_pessoas' => 'required|integer|min:0',
-            'estado' =>['required', Rule::enum(EstadoReserva::class)],
-            'criado_em' => 'required|date_format:y-m-d H:i:s',
-            'tipo_de_uso' =>['required', Rule::enum(TipoDeUso::class)],
-            'sala_id' => 'required|integer|exists:salas,id',
-            'utilizador_id' => 'required|integer|exists:users,id',
+        /* Procura a sala com base de dados com base no ID enviado no formulario*/
+        $sala = Sala::find(request('sala_id'));
+
+        /* Se a sala existir, usa a capacidade dela. Caso contrário, assume 0.*/
+        $capacidadeMaxima = $sala ? $sala->capacidade_maxima : 0;
+
+        return [
+            'data'               => 'required|date',
+
+            'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
+            'estado'             => ['required', Rule::enum(EstadoReserva::class)],
+            'criado_em'          => 'required|date_format:Y-m-d H:i:s',
+            'tipo_de_uso'        => 'required|string|in:Pendente,Confirmada,Rejeitada,Cancelada',
+            'sala_id'            => 'required|integer|exists:salas,id',
+            'utilizador_id'      => ['required', 'integer', 'exists:utilizadores,id'],
         ];
     }
 
@@ -46,7 +55,8 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate($this->rules());
-        return redirect()->route('reservas.index')->with('success', 'ReservaController criado com sucesso');
+        Reserva::create($validatedData);
+        return redirect()->route('reservas.index')->with('success', 'Reserva criado com sucesso');
     }
 
     /**
@@ -70,9 +80,9 @@ class ReservaController extends Controller
      */
     public function update(Request $request, Reserva $reserva)
     {
-        $validateData = $request->validate($this->rules($reserva));
-        $reserva->update($validateData);
-        return redirect()->route('reservas.index')->with('success', 'Atualizado com Sucesso');
+            $validateData = $request->validate($this->rules($reserva));
+            $reserva->update($validateData);
+            return redirect()->route('reservas.index')->with('success', 'Atualizado com Sucesso');
     }
 
     /**

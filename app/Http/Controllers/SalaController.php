@@ -10,12 +10,17 @@ use Illuminate\Validation\Rule;
 class SalaController extends Controller
 {
 
+    /**
+     * @param Sala|null $sala
+     * @return array
+     */
     private function rules(?Sala $sala = null): array
     {
         return[
-            'nome_numero' => 'required|string',
+            'nome_numero' => ['required', 'string', Rule::unique('salas')->ignore($sala)],
             'capacidade_maxima' => 'required|integer|min:0',
-            'tipo_sala' =>['required', Rule::enum(TipoSala::class)],
+
+            'tipo_sala' =>'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
             'piso' => 'required|integer',
             'edificio_id' => 'required|integer|exists:edificios,id',
         ];
@@ -44,7 +49,8 @@ class SalaController extends Controller
     public function store(Request $request)
     {
         $validateData = $request->validate($this->rules());
-        return redirect()->route('salas.index')->with('success', 'SalaController criado com sucesso');
+        Sala::create($validateData);
+        return redirect()->route('salas.index')->with('success', 'Sala criada com sucesso');
     }
 
     /**
@@ -52,7 +58,7 @@ class SalaController extends Controller
      */
     public function show(Sala $sala)
     {
-        //
+        return view('salas.show', ['sala'=>$sala]);
     }
 
     /**
@@ -60,7 +66,7 @@ class SalaController extends Controller
      */
     public function edit(Sala $sala)
     {
-        //
+        return view('salas.edit', compact('sala'));
     }
 
     /**
@@ -68,7 +74,9 @@ class SalaController extends Controller
      */
     public function update(Request $request, Sala $sala)
     {
-        //
+        $validadeData = $request->validate($this->rules($sala));
+        $sala->update($validadeData);
+        return redirect()->route('salas.index')->with('success', 'Atualizado com sucesso');
     }
 
     /**
@@ -76,6 +84,7 @@ class SalaController extends Controller
      */
     public function destroy(Sala $sala)
     {
-        //
+        $sala->delete();
+        return redirect()->route('salas.index')->with('success', 'Registo apagado com sucesso');
     }
 }

@@ -4,15 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Avaliacao;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AvaliacaoController extends Controller
 {
+    private function rules(?Avaliacao $avaliacao = null): array
+    {
+        return[
+            'nota' => 'required|integer|min:1|max:5',
+            'comentario' => 'nullable|string|max:512',
+            'nome_numero' => ['required', 'string', Rule::unique('salas', 'nome_numero')->ignore($sala)],
+        ];
+    }
+
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $avaliacao = Avaliacao::all();
+        return view('avaliacoes.index', compact('avaliacao'));
     }
 
     /**
@@ -20,7 +33,7 @@ class AvaliacaoController extends Controller
      */
     public function create()
     {
-        //
+        return view('avaliacoes.create');
     }
 
     /**
@@ -28,7 +41,9 @@ class AvaliacaoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validateData = $request->validate($this->rules());
+        Avaliacao::create($validateData);
+        return redirect()->route('avaliacoes.index')->with('success', 'Avaliação criado com sucesso');
     }
 
     /**
@@ -36,7 +51,7 @@ class AvaliacaoController extends Controller
      */
     public function show(Avaliacao $avaliacao)
     {
-        //
+        return view('avaliacoes.show', ['avaliacao'=>$avaliacao]);
     }
 
     /**
@@ -44,7 +59,7 @@ class AvaliacaoController extends Controller
      */
     public function edit(Avaliacao $avaliacao)
     {
-        //
+        return view('avaliacoes.edit', compact('avaliacao'));
     }
 
     /**
@@ -52,7 +67,9 @@ class AvaliacaoController extends Controller
      */
     public function update(Request $request, Avaliacao $avaliacao)
     {
-        //
+        $validateData = $request->validate($this->rules($avaliacao));
+        $avaliacao->update($validateData);
+        return redirect()->route('avaliacoes.index')->with('success', 'Atualizado com Sucesso');
     }
 
     /**
@@ -60,6 +77,7 @@ class AvaliacaoController extends Controller
      */
     public function destroy(Avaliacao $avaliacao)
     {
-        //
+        $avaliacao->delete();
+        return redirect()->route('avaliacoes.index')->with('success', 'Registo apagado com sucesso');
     }
 }

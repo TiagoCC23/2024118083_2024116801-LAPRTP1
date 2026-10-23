@@ -14,7 +14,7 @@ class HorarioController extends Controller
     private function rules(?Horario $horario = null): array
     {
         return [
-            'hora_inicio'   => 'required|date_format:H:i',
+            'hora_inicio' => ['required', 'date_format:H:i', Rule::unique('horarios')->ignore($horario)],
             'hora_fim'      => 'required|date_format:H:i|after:hora_inicio',
         ];
     }
@@ -44,7 +44,7 @@ class HorarioController extends Controller
     {
         $validadedData = $request->validate($this->rules());
         Horario::create($validadedData);
-        return redirect()->route('horarios.index')->with('success', 'HorarioController criado com sucesso');
+        return redirect()->route('horarios.index')->with('success', 'Horário criado com sucesso');
     }
 
     /**

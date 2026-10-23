@@ -15,7 +15,7 @@ class EdificioController extends Controller
     private function rules(?Edificio $edificio = null): array
     {
         return [
-            'nome'   => ['required', 'string', 'max:255'],
+            'nome'  => ['required', 'string', 'max:255', Rule::unique('edificios', 'nome')->ignore($edificio)],
             'sigla'  => ['required', 'string', 'max:5', Rule::unique('edificios', 'sigla')->ignore($edificio)],
             'imagem' => ['nullable', 'string'],
         ];
@@ -46,7 +46,7 @@ class EdificioController extends Controller
     {
         $validatedData = $request->validate($this->rules());
         Edificio::create($validatedData);
-        return redirect()->route('edificios.index')->with('success', 'EdificioController criado com sucesso!');
+        return redirect()->route('edificios.index')->with('success', 'Edifício criado com sucesso!');
     }
 
     /**
