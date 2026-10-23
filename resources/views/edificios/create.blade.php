@@ -14,20 +14,20 @@
 @endif
 
 <form action="{{ route('edificios.store') }}" method="POST">
-    @csrf                               <!--Impede ataques crossfire -->
-    <!-- Nome do Edifício -->
+    @csrf                               <!----Impede ataques crossfire ---->
+    <!---- Nome do Edifício ---->
     <div>
         <label for="nome">Nome do Edifício</label><br>
         <input type="text" id="nome" name="nome" value="{{ old('nome')}}" placeholder="Nome">
     </div>
 
-    <!-- Sigla do Edifício -->
+    <!---- Sigla do Edifício ---->
     <div>
         <label for="nome">Sigla</label><br>
         <input type="text" id="sigla" name="sigla" value="{{ old('sigla')}}" placeholder="Sigla">
     </div>
 
-    <!-- Planta/Imagem do edifício -->
+    <!---- Planta/Imagem do edifício ---->
     <div>
         <label for="nome">Nome da imagem </label><br>
         <input type="text" id="imagem" name="imagem"  value="{{ old('imagem')}}" placeholder="Nome do ficheiro da imagem">

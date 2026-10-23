@@ -14,9 +14,9 @@
 @endif
 
 <form action="{{ route('edificios.update', $edificio->id) }}" method="POST">
-    @csrf                               <!--Impede ataques crossfire -->
+    @csrf                               <!----Impede ataques crossfire ---->
 
-    @method('PUT')                      <!--Update -->
+    @method('PUT')                      <!----Update ---->
     <!-- Nome do Edifício -->
     <div>
         <label for="nome">Nome do Edifício</label><br>
