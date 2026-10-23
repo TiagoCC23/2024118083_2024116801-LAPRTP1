@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedTinyInteger('nota'); // 1 a 5
             $table->text('comentario')->nullable();
-            $table->foreignId('id_reserva')->unique()->constrained('reservas')->cascadeOnDelete();
+            $table->foreignId('reserva_id')->unique()->constrained('reservas')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -32,7 +32,7 @@ class Reserva extends Model
 
     public function horarios(): BelongsToMany
     {
-        return $this->belongsToMany(Horario::class, 'horario_reserva', 'reserva_id', 'horario_id')
+        return $this->belongsToMany(Horario::class, 'reserva_horario', 'reserva_id', 'horario_id')
             ->orderBy('hora_inicio');
     }
 
