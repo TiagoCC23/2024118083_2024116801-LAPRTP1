@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('content')
-
 <h1>Adicionar Novo Edifício</h1>
 
 @if ($errors->any())
@@ -20,19 +18,19 @@
     <!-- Nome do Edifício -->
     <div>
         <label for="nome">Nome do Edifício</label><br>
-        <input type="text" id="nome" name="nome" placeholder="Nome">
+        <input type="text" id="nome" name="nome" value="{{ old('nome')}}" placeholder="Nome">
     </div>
 
     <!-- Sigla do Edifício -->
     <div>
         <label for="nome">Sigla</label><br>
-        <input type="text" id="sigla" name="sigla" placeholder="Sigla">
+        <input type="text" id="sigla" name="sigla" value="{{ old('sigla')}}" placeholder="Sigla">
     </div>
 
     <!-- Planta/Imagem do edifício -->
     <div>
-        <label for="nome">Nome da imagem</label><br>
-        <input type="text" id="imagem" name="imagem" placeholder="Nome do ficheiro da imagem">
+        <label for="nome">Nome da imagem </label><br>
+        <input type="text" id="imagem" name="imagem"  value="{{ old('imagem')}}" placeholder="Nome do ficheiro da imagem">
     </div>
 
     <button type="submit">Gravar Edifício</button>

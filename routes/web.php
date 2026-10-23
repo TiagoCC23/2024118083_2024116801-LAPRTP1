@@ -8,7 +8,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\AvaliacaoController;
 
 Route::resource('edificios',EdificioController::class);
-Route::resource('salas', SalaController::class);
+/*Route::resource('salas', SalaController::class);
 Route::resource('reservas', ReservaController::class);
 Route::resource('horarios', HorarioController::class);
-Route::resource('avaliacoes', AvaliacaoController::class);
+Route::resource('avaliacoes', AvaliacaoController::class);*/
