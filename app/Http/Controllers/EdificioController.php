@@ -2,11 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Models\Edificio;
 use Illuminate\Http\Request;
 
 class EdificioController extends Controller
 {
+    /**
+     * @param Edificio|null $edificio
+     * @return array
+     */
+    private function rules(?Edificio $edificio = null): array
+    {
+        return [
+            'nome'   => ['required', 'string', 'max:255'],
+            'sigla'  => ['required', 'string', 'max:5', Rule::unique('edificios', 'sigla')->ignore($edificio)],
+            'imagem' => ['nullable', 'string'],
+        ];
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -29,9 +44,7 @@ class EdificioController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate(['nome' => 'required|string|max:255',
-                                             'sigla' => 'required|string|max:5',
-                                             'imagem'=>'nullable|string']);
+        $validatedData = $request->validate($this->rules());
         Edificio::create($validatedData);
         return redirect()->route('edificios.index')->with('success', 'EdificioController criado com sucesso!');
     }
@@ -39,30 +52,25 @@ class EdificioController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Edificio $edificio)
     {
-        $edificio = Edificio::findOrFail($id);
         return view('edificios.show', ['edificio' => $edificio]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Edificio $edificio)
     {
-        $edificio = Edificio::findOrFail($id); // ALGO DE ERRADO NÃO ESTÁ CERTO
         return view('edificios.edit', compact('edificio'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Edificio $edificio)
     {
-        $validatedData = $request->validate(['nome' => 'required|string|max:255',
-                                             'sigla' => 'required|string|max:5',
-                                             'imagem'=>'nullable|string']);
-        $edificio = Edificio::findOrFail($id);
+        $validatedData = $request->validate($this->rules($edificio));
         $edificio -> update($validatedData);
         return redirect()->route('edificios.index')->with('success', 'Atualizado com Sucesso');
     }
@@ -70,9 +78,8 @@ class EdificioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Edificio $edificio)
     {
-        $edificio = Edificio::findOrFail($id);
         $edificio->delete();
         return redirect()->route('edificios.index')
             ->with('success', 'Registo apagado com sucesso');
