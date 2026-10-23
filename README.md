@@ -102,7 +102,7 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 | email | UQ | Email do utilizador |
 | password_hash | | Password em hash do utilizador |
 | tipo_user | | Tipo do utilizador (se é admin, normal ou email da ufp) |
-| tipo_sala_id | FK | Identificador da sala administrada pelo admin |
+| edificio_id | FK | Identificador da sala administrada pelo admin |
 | criado_em | | Data da criação da conta |
 | eliminado_em | | | Data da eliminação da conta |
 
@@ -131,6 +131,7 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 | --- | --- | --- |
 | id | PK | Identificador do edifício |
 | nome | | Nome do edifício |
+| sigla | | Sigla que identifica o edifício |
 | imagem | | Planta do edifício |
 
 ## Horário

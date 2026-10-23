@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "C:\\Users\\tiago\\.config\\herd-lite\\bin\\php.exe",
+      "args": [
+        "C:\\Users\\tiago\\Documents\\GitHub\\2024118083_2024116801-LAPRTP1\\Biblioteca-ocupada\\artisan",
+        "boost:mcp"
+      ]
+    }
+  }
+}

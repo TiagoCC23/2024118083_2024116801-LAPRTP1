@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class Edificio extends Controller
+class HorarioController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $edificios = \App\Models\Edificio::all();
-        return view('edificios.index', compact('edificios'));
+        //
     }
 
     /**
@@ -20,7 +19,7 @@ class Edificio extends Controller
      */
     public function create()
     {
-        return view('edificios.create');
+        //
     }
 
     /**
@@ -28,9 +27,7 @@ class Edificio extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate(['nome' => 'required |string | max:255', 'sigla' => 'required |string | max:5', 'imagem'=>'nullable|string']);
-        $this->create($validatedData);
-        return redirect()->route('edificios.index')->with('success', 'Edificio criado com sucesso!');
+        //
     }
 
     /**
@@ -46,8 +43,7 @@ class Edificio extends Controller
      */
     public function edit(string $id)
     {
-        $edificios = \App\Models\Edificio::findOrFail($id);
-        return view('edificios.edit', compact('edificios'));
+        //
     }
 
     /**
