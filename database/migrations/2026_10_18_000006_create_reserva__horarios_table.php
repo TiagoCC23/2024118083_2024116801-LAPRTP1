@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('avaliacaos', function (Blueprint $table) {
+        Schema::create('reserva_horario', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('nota'); // 1 a 5
-            $table->text('comentario')->nullable();
-            $table->foreignId('id_reserva')->unique()->constrained('reservas')->cascadeOnDelete();
+            $table->foreignId('reserva_id')->constrained('reservas')->cascadeOnDelete();
+            $table->foreignId('horario_id')->constrained('horarios')->cascadeOnDelete();
+            $table->unique(['reserva_id', 'horario_id']);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('avaliacaos');
+        Schema::dropIfExists('reserva_horario');
     }
 };
