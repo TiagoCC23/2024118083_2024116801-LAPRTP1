@@ -1,18 +1,22 @@
-<!doctype html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Editar Edifício</title>
-</head>
-<body>
+@extends('layouts.app')
+@section('content')
 <h1>Editar Edifício {{$edificio->nome}}</h1>
-<form action="{{ route('edificio.update', $edificio->id) }}" method="POST">
-    @csrf                               <!--Impede ataques crossfire -->
 
-    @method('PUT')                      <!--Update -->
+@if ($errors->any())
+    <div>
+        <strong>Atenção - O formulário contem erros:</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form action="{{ route('edificios.update', $edificio->id) }}" method="POST">
+    @csrf                               <!----Impede ataques crossfire ---->
+
+    @method('PUT')                      <!----Update ---->
     <!-- Nome do Edifício -->
     <div>
         <label for="nome">Nome do Edifício</label><br>
@@ -35,6 +39,4 @@
 </form>
 <br>
 <a href="{{ route('edificios.index') }}">Cancelar e Voltar à Lista</a>
-
-</body>
-</html>
+@endsection

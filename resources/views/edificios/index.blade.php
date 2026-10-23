@@ -1,13 +1,6 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Lista de Edifícios</title>
-</head>
-<body>
+@extends('layouts.app')
+@section('content')
+
 <h1>Lista de edifícios</h1>
 <table>
     <tr>
@@ -23,11 +16,17 @@
             <td> {{ $edificio->nome }}</td>
             <td> {{ $edificio->sigla }}</td>
             <td> {{ $edificio->imagem }}</td>
-            <td><button>Editar</button></td> <!--Depois eu tento entender esta sugestão -->
+            <td>
+                <a href="{{route('edificios.edit', $edificio)}}">Editar</a>
+                <form action="{{ route('edificios.destroy', $edificio) }}" method="POST" onsubmit="return confirm('Eliminar este edifício')">
+                    @csrf
+                    @method('DELETE')   <!---- Pergunta ao server se quer apagar um registo específico dos dados ---->
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
         </tr>
     @endforeach
 </table>
 <br>
-<a href="{{ route('$edificios.create') }}">Adicionar um novo edifíco</a>
-</body>
-</html>
+<a href="{{ route('edificios.create') }}">Adicionar um novo edifíco</a>
+@endsection
