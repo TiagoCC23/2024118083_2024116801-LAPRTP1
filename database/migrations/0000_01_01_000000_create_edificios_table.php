@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('edificios', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
-            $table->string('sigla');
+            $table->string('nome', 100);
+            $table->string('sigla', 10);
             $table->string('imagem')->nullable();
             $table->timestamps();
         });

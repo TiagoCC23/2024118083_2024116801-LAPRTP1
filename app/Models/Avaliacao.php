@@ -3,12 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Avaliacao extends Model
 {
-    protected $fillable = ['nota', 'comentario', 'id_reserva'];
+    protected $table = 'avaliacoes';
+    public $timestamps = false;
+    protected $fillable = ['nota', 'comentario', 'reserva_id'];
 
-    public function reserva(){
-        return $this->belongsTo(Reserva::class, 'id_reserva');
+    public function reserva(): BelongsTo
+    {
+        return $this->belongsTo(Reserva::class);
     }
 }
