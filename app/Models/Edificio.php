@@ -18,6 +18,6 @@ class Edificio extends Model
 
     public function utilizadores(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Utilizador::class);
     }
 }

@@ -13,7 +13,7 @@ class Horario extends Model
 
     public function reservas(): BelongsToMany
     {
-        return $this->belongsToMany(Reserva::class, 'horario_reserva', 'horario_id', 'reserva_id');
+        return $this->belongsToMany(Reserva::class, 'reserva_horario', 'horario_id', 'reserva_id');
     }
 
     public function getIntervaloAttribute(): string

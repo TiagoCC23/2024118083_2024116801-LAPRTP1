@@ -25,6 +25,6 @@ class Sala extends Model
 
     public function administradores(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'administra', 'sala_id', 'utilizador_id');
+        return $this->belongsToMany(Utilizador::class, 'administra', 'sala_id', 'utilizador_id');
     }
 }

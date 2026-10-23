@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('administra', function (Blueprint $t) {
             $t->id();
-            $t->foreignId('utilizador_id')->constrained('users')->cascadeOnDelete(); // user = admin
+            $t->foreignId('utilizador_id')->constrained('utilizadores')->cascadeOnDelete(); // user = admin
             $t->foreignId('sala_id')->constrained('salas')->cascadeOnDelete();
             $t->unique(['utilizador_id', 'sala_id']);
         });
