@@ -13,14 +13,14 @@
     </div>
 @endif
 
-<form action="{{ route('edificios.update', $edificio->id) }}" method="POST">
+<form action="{{ route('avaliacoes.update', $avaliacao->id) }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
 
     @method('PUT')                      <!--Update -->
     <!-- Nome do Edifício -->
     <div>
         <label for="nome">Nome do Edifício</label><br>
-        <input type="text" id="nome" name="nome" value ="{{ $edificio->nome }}" placeholder="Nome">
+        <input type="text" id="nome" name="nome" value ="{{ $avaliacao->nome }}" placeholder="Nome">
     </div>
 
     <!-- Sigla do Edifício -->

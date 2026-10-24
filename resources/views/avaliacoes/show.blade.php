@@ -1,14 +1,14 @@
 @extends('layouts.app')
 @section('content')
-<h1>Detalhes do Edifício: {{$edificio->nome}}</h1>;
+<h1>Detalhes do Edifício: {{$avaliacao->nome}}</h1>;
 
 <div>
-    <p>ID: {{$edificio->id}}</p>
-    <p>Nome: {{$edificio->nome}}</p>
-    <p>Sigla: {{$edificio->sigla}}</p>
-    <p>Imagem: {{$edificio->imagem}}</p>
+    <p>ID: {{$avaliacao->id}}</p>
+    <p>Nome: {{$avaliacao->nota}}</p>
+    <p>Sigla: {{$avaliacao->comentario}}</p>
+    <p>Imagem: {{$avaliacao->reserva_id}}</p>
 
-    <a href="{{route('edificios.index')}}">Voltar à lista</a>
-    <a href="{{route('edificios.edit', $edificio->id)}}">Editar este edifício</a>
+    <a href="{{route('avaliacoes.index')}}">Voltar à lista</a>
+    <a href="{{route('avaliacoes.edit', $avaliacao->id)}}">Editar esta avaliação</a>
 </div>
 @endsection

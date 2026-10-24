@@ -13,30 +13,25 @@
     </div>
 @endif
 
-<form action="{{ route('edificios.update', $edificio->id) }}" method="POST">
+<form action="{{ route('horarios.update', $horario->id) }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
 
     @method('PUT')                      <!--Update -->
-    <!-- Nome do Edifício -->
+    <!-- Hora início -->
     <div>
-        <label for="nome">Nome do Edifício</label><br>
-        <input type="text" id="nome" name="nome" value ="{{ $edificio->nome }}" placeholder="Nome">
+        <label for="nome">Hora início</label><br>
+        <input type="text" id="horaInicio" name="horaInicio" value ="{{ $horario->inicio }}" placeholder="Hora início">
     </div>
 
-    <!-- Sigla do Edifício -->
+    <!-- Hora fim -->
     <div>
-        <label for="nome">Sigla</label><br>
-        <input type="text" id="sigla" name="sigla" value ="{{ $edificio->sigla }}" placeholder="Sigla">
+        <label for="nome">Hora fim</label><br>
+        <input type="text" id="horaFim" name="horaFim" value ="{{ $horario->fim }}" placeholder="Hora fim">
     </div>
 
-    <!-- Planta/Imagem do edifício -->
-    <div>
-        <label for="nome">Nome da imagem</label><br>
-        <input type="text" id="imagem" name="imagem" value ="{{ $edificio->imagem }}" placeholder="Nome do ficheiro da imagem">
-    </div>
 
-    <button type="submit">Atualizar Edifício</button>
+    <button type="submit">Atualizar Horário</button>
 </form>
 <br>
-<a href="{{ route('edificios.index') }}">Cancelar e Voltar à Lista</a>
+<a href="{{ route('horarios.index') }}">Cancelar e Voltar à Lista</a>
 @endsection
