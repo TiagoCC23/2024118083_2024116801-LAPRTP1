@@ -79,7 +79,7 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 ---
 
 # Modelo E-R
-<img src= "LAPR_projeto.drawio.png" alt = "Modelo E-R">
+<img src= "./apresentacao/LAPR_projeto.drawio.png" alt = "Modelo E-R">
 
 ---
 # Dicionário de Dados
@@ -91,6 +91,7 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 | nome_numero | | Nome ou número da sala |
 | capacidade_maxima | | Capacidade total da sala |
 | tipo_sala | | Identificador do tipo da sala (ex: laboratório, biblioteca...) |
+| disponibilidade | | Disponibildade da sala (ex: disponível, ocupado, pedente) |
 | piso | | Piso de onde a sala se encontra | 
 | edificio_id | FK | Identificador do edifício que pertence |
 

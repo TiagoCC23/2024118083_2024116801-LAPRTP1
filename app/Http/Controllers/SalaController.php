@@ -19,8 +19,8 @@ class SalaController extends Controller
         return[
             'nome_numero' => ['required', 'string', Rule::unique('salas')->ignore($sala)],
             'capacidade_maxima' => 'required|integer|min:0',
-
             'tipo_sala' =>'required|string|in:Exame,Trabalho,SalaDeAula,Outro',
+            'disponibilidade' => 'required|string'
             'piso' => 'required|integer',
             'edificio_id' => 'required|integer|exists:edificios,id',
         ];
