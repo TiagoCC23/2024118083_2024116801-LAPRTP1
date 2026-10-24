@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Edificio;
+use App\Models\Horario;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 
@@ -12,13 +14,13 @@ class ReservaController extends Controller
      */
     public function index()
     {
-        //
+       //
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         //
     }
