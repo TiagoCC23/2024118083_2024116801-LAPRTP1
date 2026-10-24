@@ -48,7 +48,7 @@ class AuthController extends Controller{
             'email' => $dados['email'],
             'password_hash' => Hash::make($dados['password']), /* faz o hash */
             'tipo_user' => $dados['tipo_user'],
-            'verificado_em' => now(), // TODO E2: trocar por verificação real de email
+            'verificado_em' => now(), /* TODO E2:  descobrir como trocar por verificação real de email */
         ]);
         Auth::login($utilizador);
         $request->session()->regenerate(); /*Regenera a sessao apos a criacao de conta*/

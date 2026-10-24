@@ -21,7 +21,12 @@
             <td> {{ $sala->disponibilidade }}</td>
             <td> {{ $sala->piso }}</td>
             <td> {{ $sala->edificio_id }}</td>
-            <td><button>Editar</button></td>
+            <a href="{{route('salas.edit', $sala)}}">Editar</a>
+            <form action="{{ route('salas.destroy', $sala) }}" method="POST" onsubmit="return confirm('Eliminar esta sala')">
+                @csrf
+                @method('DELETE')   <!---- Pergunta ao server se quer apagar um registo específico dos dados ---->
+                <button type="submit">Eliminar</button>
+            </form>
         </tr>
     @endforeach
 </table>

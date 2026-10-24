@@ -16,7 +16,12 @@
             <td> {{ $avaliacao->nota }}</td>
             <td> {{ $avaliacao->comentario }}</td>
             <td> {{ $avaliacao->reserva_id }}</td>
-            <td><button>Editar</button></td> <!--Depois eu tento entender esta sugestão -->
+            <a href="{{route('avaliacoes.edit', $avaliacao)}}">Editar</a>
+            <form action="{{ route('avaliacoes.destroy', $avaliacao) }}" method="POST" onsubmit="return confirm('Eliminar esta avaliação')">
+                @csrf
+                @method('DELETE')   <!---- Pergunta ao server se quer apagar um registo específico dos dados ---->
+                <button type="submit">Eliminar</button>
+            </form>
         </tr>
     @endforeach
 </table>

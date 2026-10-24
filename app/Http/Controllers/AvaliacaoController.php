@@ -14,8 +14,8 @@ class AvaliacaoController extends Controller
         return[
             'nota' => 'required|integer|min:1|max:5',
             'comentario' => 'nullable|string|max:512',
-            'nome_numero' => ['required', 'string', Rule::unique('salas', 'nome_numero')->ignore($sala)],
-        ];
+            'reserva_id' => ['required', 'integer', 'exists:reservas,id', Rule::unique('avaliacoes', 'reserva_id')->ignore($avaliacao)],
+            ];
     }
 public function minhasAvaliacoes()
 {
