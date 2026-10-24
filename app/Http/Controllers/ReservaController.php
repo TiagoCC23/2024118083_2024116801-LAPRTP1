@@ -30,11 +30,12 @@ class ReservaController extends Controller
             'utilizador_id'      => ['required', 'integer', 'exists:utilizadores,id'],
         ];
     }
-public function minhasReservas()
-{
-$reservas = Reserva::where('utilizador_id', Auth::id()->get());
-return view('reservas.index', compact('reservas'));
-}
+    public function minhasReservas()
+    {
+        $reservas = Reserva::where('utilizador_id', Auth::id())->get();
+        return view('reservas.index', compact('reservas'));
+    }
+
     public function alterarEstado(Request $request, Reserva $reserva)
     {
         /* verifica se o estado enviado pertence em Enum */

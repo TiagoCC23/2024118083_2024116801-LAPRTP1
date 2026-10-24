@@ -11,7 +11,7 @@ class ImportarOcupacoes extends Command
     protected $signature = 'ocupacoes:importar {ficheiro}';
     protected $description = 'Importa o CSV de ocupação de um espaço';
 
-    public function handle(ImportadorOcupacoes $importador): int
+    public function handle(Importador $importador): int
     {
         try {
             $n = $importador->importar($this->argument('ficheiro'));
