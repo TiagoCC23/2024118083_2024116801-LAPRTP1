@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Avaliacao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AvaliacaoController extends Controller
@@ -16,7 +17,15 @@ class AvaliacaoController extends Controller
             'nome_numero' => ['required', 'string', Rule::unique('salas', 'nome_numero')->ignore($sala)],
         ];
     }
+public function minhasAvaliacoes()
+{
+$userId = Auth::id();
 
+$avaliacoes = Avaliacao::whereHas('reserva', function ($query) use ($userId) {
+    $query->where('utilizador_id', $userId);
+})->get();
+return view('avaliacoes.self', compact($avaliacoes));
+}
 
 
     /**

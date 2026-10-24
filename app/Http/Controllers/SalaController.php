@@ -36,11 +36,12 @@ class SalaController extends Controller
         /* Muito AI gen, tenho de ver melhor ou tentar perceber esta querie*/
         $salasDisponiveis = Sala::where('capacidade_maxima', '>=', $capacidadeRequest)
             ->whereDoesntHave('reservas', function ($query) use ($dataRequest) {
-                // Exclui as salas que tenham reservas para este dia e que não estejam canceladas/rejeitadas
+                /*Exclui as salas que tenham reservas para a dataRequest e que o estado não seja cancelada/rejeitada*/
                 $query->whereDate('data', $dataRequest)
                     ->whereIn('estado', ['Pendente', 'Confirmada']);
             })
             ->get();
+
         return view('sala.disponibilidade', compact('salasDisponiveis', 'dataRequest', 'capacidadeRequest'));
     }
 
