@@ -1,25 +1,25 @@
 @extends('layouts.app')
 @section('content')
 
-<h1>Lista de edifícios</h1>
+<h1>Lista de avaliações</h1>
 <table>
     <tr>
     <th>ID</th>
-    <th>Nome</th>
-    <th>Sigla</th>
-    <th>Imagem</th>
+    <th>Nota</th>
+    <th>Comentário</th>
+    <th>Reserva_ID</th>
     </tr>
 
-    @foreach($edificios as $edificio)
+    @foreach($avaliacoes as $avaliacao)
         <tr>
-            <td> {{ $edificio->id }}</td>
-            <td> {{ $edificio->nome }}</td>
-            <td> {{ $edificio->sigla }}</td>
-            <td> {{ $edificio->imagem }}</td>
+            <td> {{ $avaliacao->id }}</td>
+            <td> {{ $avaliacao->nota }}</td>
+            <td> {{ $avaliacao->comentario }}</td>
+            <td> {{ $avaliacao->reserva_id }}</td>
             <td><button>Editar</button></td> <!--Depois eu tento entender esta sugestão -->
         </tr>
     @endforeach
 </table>
 <br>
-<a href="{{ route('$edificios.create') }}">Adicionar um novo edifíco</a>
+<a href="{{ route('avaliacoes.create') }}">Adicionar uma nova avaliação</a>
 @endsection

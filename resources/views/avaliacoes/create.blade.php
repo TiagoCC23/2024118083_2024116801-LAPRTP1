@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h1>Adicionar Novo Edifício</h1>
+<h1>Adicionar Nova Avaliação</h1>
 
 @if ($errors->any())
     <div>
@@ -15,28 +15,28 @@
     </div>
 @endif
 
-<form action="{{ route('edificios.store') }}" method="POST">
+<form action="{{ route('avaliacoes.store') }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
-    <!-- Nome do Edifício -->
+    <!-- Nota da Avaliação -->
     <div>
-        <label for="nome">Nome do Edifício</label><br>
-        <input type="text" id="nome" name="nome" placeholder="Nome">
+        <label for="nome">Nota da avaliação</label><br>
+        <input type="number" id="nota" name="nota" value="{{ old('nota')}}" placeholder="0-5">
     </div>
 
-    <!-- Sigla do Edifício -->
+    <!-- Comentário -->
     <div>
-        <label for="nome">Sigla</label><br>
-        <input type="text" id="sigla" name="sigla" placeholder="Sigla">
+        <label for="nome">Comentário</label><br>
+        <input type="text" id="comentario" name="comentario" value="{{ old('comentario')}}" placeholder="Comentário">
     </div>
 
-    <!-- Planta/Imagem do edifício -->
+    <!-- Id da reserva -->
     <div>
-        <label for="nome">Nome da imagem</label><br>
-        <input type="text" id="imagem" name="imagem" placeholder="Nome do ficheiro da imagem">
+        <label for="nome">Reserva ID</label><br>
+        <input type="number" id="reservaID" name="reservaID" value="{{ old('reservaID')}}" placeholder="ID da reserva">
     </div>
 
-    <button type="submit">Gravar Edifício</button>
+    <button type="submit">Gravar Avaliação</button>
 </form>
 <br>
-<a href="{{ route('edificios.index') }}">Cancelar e Voltar à Lista</a>
+<a href="{{ route('avaliacoes.index') }}">Cancelar e Voltar à Lista</a>
 @endsection
