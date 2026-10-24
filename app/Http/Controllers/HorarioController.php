@@ -42,8 +42,17 @@ class HorarioController extends Controller
      */
     public function store(Request $request)
     {
-        $validadedData = $request->validate($this->rules());
-        Horario::create($validadedData);
+        $validatedData = $request->validate($this->rules());
+
+        $validatedData['hora_inicio'] = strlen($validatedData['hora_inicio']) === 5
+            ? $validatedData['hora_inicio'] . ':00'
+            : $validatedData['hora_inicio'];
+
+        $validatedData['hora_fim'] = strlen($validatedData['hora_fim']) === 5
+            ? $validatedData['hora_fim'] . ':00'
+            : $validatedData['hora_fim'];
+
+        Horario::create($validatedData);
         return redirect()->route('horarios.index')->with('success', 'Horário criado com sucesso');
     }
 
@@ -69,7 +78,16 @@ class HorarioController extends Controller
     public function update(Request $request, Horario $horario)
     {
         $validatedData = $request->validate($this->rules($horario));
-        $horario -> update($validatedData);
+
+        $validatedData['hora_inicio'] = strlen($validatedData['hora_inicio']) === 5
+            ? $validatedData['hora_inicio'] . ':00'
+            : $validatedData['hora_inicio'];
+
+        $validatedData['hora_fim'] = strlen($validatedData['hora_fim']) === 5
+            ? $validatedData['hora_fim'] . ':00'
+            : $validatedData['hora_fim'];
+
+        $horario->update($validatedData);
         return redirect()->route('horarios.index')->with('success', 'Atualizado com Sucesso');
     }
 
