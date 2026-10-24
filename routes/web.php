@@ -32,6 +32,10 @@ Route::get('/home', function () {
     return view('home');
 })->name('home');
 
+/* Rotas extra do user */
+Route::get('/salas/search', [SalaController::class, 'checkDisponibilidade'])->name('salas.pesquisar');
+Route::get('/avaliacoes/self', [AvaliacaoController::class, 'minhasAvaliacoes'])->name('avaliacoes.minhas');
+/* Rotas principais */
 Route::resource('reservas', ReservaController::class);
 Route::resource('horarios', HorarioController::class);
 Route::resource('edificios', EdificioController::class);
