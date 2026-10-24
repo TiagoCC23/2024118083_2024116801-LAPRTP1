@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('auth');
 });
+Route::get('/home', function () {
+    return view('home');
+});
 
 // 2. Rotas de Autenticação
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
