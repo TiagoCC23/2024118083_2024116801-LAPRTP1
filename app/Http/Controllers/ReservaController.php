@@ -14,23 +14,7 @@ class ReservaController extends Controller
      */
     public function index()
     {
-        $caminhoCsv = storage_path('app/reservas.csv');
-        $reservasCsv = [];
-
-        if (file_exists($caminhoCsv)) {
-            $linhas = array_map('str_getcsv', file($caminhoCsv));
-            if (!empty($linhas)) {
-                $cabecalho = array_shift($linhas);
-                foreach ($linhas as $linha) {
-                    if (count($cabecalho) === count($linha)) {
-                        $reservasCsv[] = array_combine($cabecalho, $linha);
-                    }
-                }
-            }
-        }
-
-        // Retorna a view reservas/show.blade.php (ou reservas/index)
-        return view('reservas.index', compact('reservasCsv'));
+       //
     }
 
     /**
@@ -38,15 +22,7 @@ class ReservaController extends Controller
      */
     public function create(Request $request)
     {
-        // 1. Captura a data enviada pela URL (ou usa a data de hoje como fallback)
-        $dataSelecionada = $request->query('data', now()->toDateString());
-
-        // 2. Busca os dados necessários para popular os selects do formulário
-        $edificios = Edificio::all();
-        $horarios = Horario::orderBy('hora_inicio')->get();
-
-        // 3. Envia a data e os modelos para a view
-        return view('reservas.create', compact('dataSelecionada', 'edificios', 'horarios'));
+        //
     }
 
     /**
