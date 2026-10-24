@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Disponibilidade;
 use App\Enums\TipoSala;
 use App\Models\Sala;
 use Illuminate\Http\Request;
@@ -19,8 +20,8 @@ class SalaController extends Controller
         return[
             'nome_numero' => ['required', 'string', Rule::unique('salas')->ignore($sala)],
             'capacidade_maxima' => 'required|integer|min:0',
-
             'tipo_sala' =>'required|string|in:Exame,Trabalho,SalaDeAula,Outro',
+            'disponibilidade' => ['required',Rule::enum(Disponibilidade::class)],
             'piso' => 'required|integer',
             'edificio_id' => 'required|integer|exists:edificios,id',
         ];
