@@ -38,8 +38,16 @@ class DatabaseSeederTest extends TestCase
 
         // 3. Salas
         $this->assertDatabaseCount('salas', 2);
-        $this->assertDatabaseHas('salas', ['nome_numero' => 'Sala 302', 'piso' => 3]);
-        $this->assertDatabaseHas('salas', ['nome_numero' => 'Sala 204', 'piso' => 2]);
+        $this->assertDatabaseHas('salas', [
+            'nome_numero' => 'Sala 302',
+            'piso' => 3,
+            'disponibilidade' => 'disponivel',
+        ]);
+        $this->assertDatabaseHas('salas', [
+            'nome_numero' => 'Sala 204',
+            'piso' => 2,
+            'disponibilidade' => 'ocupado',
+        ]);
 
         // 4. Horários (8h até às 18h -> 10 blocos de 1 hora)
         $this->assertDatabaseCount('horarios', 10);
