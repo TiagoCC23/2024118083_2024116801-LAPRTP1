@@ -1,17 +1,32 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Horario;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class HorarioController extends Controller
 {
+    /**
+     * @param Horario|null $horario
+     * @return array[]
+     */
+    private function rules(?Horario $horario = null): array
+    {
+        return [
+            'hora_inicio' => ['required', 'date_format:H:i', Rule::unique('horarios')->ignore($horario)],
+            'hora_fim'      => 'required|date_format:H:i|after:hora_inicio',
+        ];
+    }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $horarios = Horario::all();
+        return view('horarios.index', compact('horarios'));
     }
 
     /**
@@ -19,7 +34,7 @@ class HorarioController extends Controller
      */
     public function create()
     {
-        //
+        return view('horarios.create');
     }
 
     /**
@@ -27,38 +42,43 @@ class HorarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validadedData = $request->validate($this->rules());
+        Horario::create($validadedData);
+        return redirect()->route('horarios.index')->with('success', 'Horário criado com sucesso');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Horario $horario)
     {
-        //
+        return view('horarios.show', ['horario' => $horario]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Horario $horario)
     {
-        //
+        return view('horarios.edit', compact('horario'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Horario $horario)
     {
-        //
+        $validatedData = $request->validate($this->rules($horario));
+        $horario -> update($validatedData);
+        return redirect()->route('horarios.index')->with('success', 'Atualizado com Sucesso');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Horario $horario)
     {
-        //
+        $horario->delete();
+        return redirect()->route('horarios.index')->with('success', 'Registo apagado com sucesso');
     }
 }
