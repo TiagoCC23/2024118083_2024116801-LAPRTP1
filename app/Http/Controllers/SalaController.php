@@ -20,11 +20,30 @@ class SalaController extends Controller
             'nome_numero' => ['required', 'string', Rule::unique('salas')->ignore($sala)],
             'capacidade_maxima' => 'required|integer|min:0',
 
-            'tipo_sala' =>'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
+            'tipo_sala' =>'required|string|in:Exame,Trabalho,SalaDeAula,Outro',
             'piso' => 'required|integer',
             'edificio_id' => 'required|integer|exists:edificios,id',
         ];
     }
+
+
+    public function checkDisponibilidade(Request $request)
+    {
+        $request->validate(['data' => 'required|date', 'capacidade_maxima' => 'required|integer|min:0',]);
+        $dataRequest = $request->input('data');
+        $capacidadeRequest = $request->input('capacidade_maxima');
+
+        /* Muito AI gen, tenho de ver melhor ou tentar perceber esta querie*/
+        $salasDisponiveis = Sala::where('capacidade_maxima', '>=', $capacidadeRequest)
+            ->whereDoesntHave('reservas', function ($query) use ($dataRequest) {
+                // Exclui as salas que tenham reservas para este dia e que não estejam canceladas/rejeitadas
+                $query->whereDate('data', $dataRequest)
+                    ->whereIn('estado', ['Pendente', 'Confirmada']);
+            })
+            ->get();
+        return view('sala.disponibilidade', compact('salasDisponiveis', 'dataRequest', 'capacidadeRequest'));
+    }
+
 
     /**
      * Display a listing of the resource.

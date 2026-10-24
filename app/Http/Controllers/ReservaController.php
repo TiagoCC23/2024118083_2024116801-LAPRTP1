@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Enums\TipoDeUso;
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Enums\EstadoReserva;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use phpDocumentor\Reflection\Types\String_;
 
 class ReservaController extends Controller
 {
@@ -26,12 +25,29 @@ class ReservaController extends Controller
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
             'estado'             => ['required', Rule::enum(EstadoReserva::class)],
             'criado_em'          => 'required|date_format:Y-m-d H:i:s',
-            'tipo_de_uso'        => 'required|string|in:Pendente,Confirmada,Rejeitada,Cancelada',
+            'tipo_de_uso'        => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
             'sala_id'            => 'required|integer|exists:salas,id',
             'utilizador_id'      => ['required', 'integer', 'exists:utilizadores,id'],
         ];
     }
+public function minhasReservas()
+{
+$reservas = Reserva::where('utilizador_id', Auth::id()->get());
+return view('reservas.index', compact('reservas'));
+}
+    public function alterarEstado(Request $request, Reserva $reserva)
+    {
+        /* verifica se o estado enviado pertence em Enum */
+        $validated = $request->validate([
+            'estado' => ['required', Rule::enum(EstadoReserva::class)],
+        ]);
 
+        /* Atualiza o estado */
+        $reserva->update(['estado' => $validated['estado']]);
+
+        /* Volta para onde o utilizador estava*/
+        return back()->with('success', 'Estado da reserva atualizado!');
+    }
     /**
      * Display a listing of the resource.
      */
