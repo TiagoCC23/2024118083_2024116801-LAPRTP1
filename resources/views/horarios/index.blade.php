@@ -118,22 +118,18 @@
 </head>
 <body class="font-body min-vh-100 d-flex flex-column justify-content-between">
 
-<!-- ================= 1. NAVEGAÇÃO ================= -->
-<header class="p-4 p-md-5 d-flex justify-content-between align-items-center position-relative z-3 border-bottom border-white-10">
-    <a href="{{ url('/home') }}" class="text-white text-decoration-none text-uppercase fw-semibold border-bottom border-white pb-1" style="font-size: 0.85rem; letter-spacing: 0.15em;">
-        <i class="bi bi-house me-1"></i> Home
+<!-- Cabeçalho -->
+<header class="p-4 p-md-5 d-flex justify-content-between align-items-center position-relative z-3">
+    <a href="{{ url('/home') }}" class="text-white text-decoration-none font-display fs-4 fw-bold tracking-tight">
+        UFP <span class="fw-normal text-white-50">SALAS</span>
     </a>
 
     <div class="d-flex align-items-center gap-3">
         @auth
-            <div class="d-flex align-items-center text-white-50 small gap-2">
-                <i class="bi bi-person-circle fs-5 text-white"></i>
-                <span class="d-none d-sm-inline fw-semibold text-white">{{ Auth::user()->nome ?? Auth::user()->name }}</span>
-            </div>
-            <span class="text-white-50">|</span>
+            <span class="text-white-50 small d-none d-sm-inline">Olá, <strong>{{ Auth::user()->nome ?? Auth::user()->name }}</strong></span>
             <form method="POST" action="{{ route('logout') }}" class="d-inline">
                 @csrf
-                <button type="submit" class="btn btn-link text-white-50 text-decoration-none text-uppercase small p-0" style="letter-spacing: 0.1em; font-size: 0.75rem;">
+                <button type="submit" class="btn btn-link text-white-50 text-decoration-none text-uppercase small p-0">
                     Sair <i class="bi bi-box-arrow-right ms-1"></i>
                 </button>
             </form>
@@ -142,7 +138,7 @@
 </header>
 
 <!-- ================= 2. CONTEÚDO CENTRAL ================= -->
-<main class="container my-auto py-5 position-relative z-3" style="max-width: 1200px;">
+<main class="container my-auto py-5 position-relative z-3" style="max-width: 1000px;">
 
     <!-- PAINEL SUPERIOR: MESMAS INFORMAÇÕES QUE NA RESERVA -->
     <div class="liquid-glass-card p-4 p-md-4 mb-4">
@@ -172,33 +168,33 @@
         </div>
     </div>
 
-    <!-- TABELA DE HORÁRIOS (INTERVALOS DE 1 HORA) -->
+    <!-- TABELA DE HORÁRIOS -->
     <div class="liquid-glass-card p-3 p-md-4">
         <div class="table-responsive">
             <table class="table table-horarios align-middle">
                 <thead>
                 <tr>
-                    <th>Intervalo de Horário</th>
-                    <th>Duração</th>
-                    <th>Salas Livres</th>
-                    <th>Estado Geral</th>
+                    <th>Horário</th>
+                    <th>Disponibilidade</th>
+                    <th>Sala</th>
+                    <th>Tipo de Uso</th>
                     <th class="text-end">Ação</th>
                 </tr>
                 </thead>
                 <tbody>
                 @php
-                    // Lista estática/dinâmica dos blocos de 1 hora (das 08:00 às 20:00)
+                    // Lista estática/dinâmica com os campos ajustados
                     $blocosHorarios = $horarios ?? [
-                        ['inicio' => '08:00', 'fim' => '09:00', 'livres' => 12, 'estado' => 'Livre'],
-                        ['inicio' => '09:00', 'fim' => '10:00', 'livres' => 8,  'estado' => 'Livre'],
-                        ['inicio' => '10:00', 'fim' => '11:00', 'livres' => 3,  'estado' => 'Livre'],
-                        ['inicio' => '11:00', 'fim' => '12:00', 'livres' => 0,  'estado' => 'Ocupado'],
-                        ['inicio' => '12:00', 'fim' => '13:00', 'livres' => 15, 'estado' => 'Livre'],
-                        ['inicio' => '13:00', 'fim' => '14:00', 'livres' => 10, 'estado' => 'Livre'],
-                        ['inicio' => '14:00', 'fim' => '15:00', 'livres' => 2,  'estado' => 'Livre'],
-                        ['inicio' => '15:00', 'fim' => '16:00', 'livres' => 0,  'estado' => 'Ocupado'],
-                        ['inicio' => '16:00', 'fim' => '17:00', 'livres' => 6,  'estado' => 'Livre'],
-                        ['inicio' => '17:00', 'fim' => '18:00', 'livres' => 9,  'estado' => 'Livre'],
+                        ['inicio' => '08:00', 'fim' => '09:00', 'estado' => 'Disponível', 'sala' => 'Sala 101', 'tipo_uso' => 'Estudo Individual'],
+                        ['inicio' => '09:00', 'fim' => '10:00', 'estado' => 'Disponível', 'sala' => 'Sala 102', 'tipo_uso' => 'Trabalho de Grupo'],
+                        ['inicio' => '10:00', 'fim' => '11:00', 'estado' => 'Disponível', 'sala' => 'Sala 201', 'tipo_uso' => 'Estudo Individual'],
+                        ['inicio' => '11:00', 'fim' => '12:00', 'estado' => 'Ocupado',    'sala' => 'Sala 101', 'tipo_uso' => 'Trabalho de Grupo'],
+                        ['inicio' => '12:00', 'fim' => '13:00', 'estado' => 'Disponível', 'sala' => 'Auditório A', 'tipo_uso' => 'Reunião'],
+                        ['inicio' => '13:00', 'fim' => '14:00', 'estado' => 'Disponível', 'sala' => 'Sala 103', 'tipo_uso' => 'Estudo Individual'],
+                        ['inicio' => '14:00', 'fim' => '15:00', 'estado' => 'Disponível', 'sala' => 'Sala 202', 'tipo_uso' => 'Trabalho de Grupo'],
+                        ['inicio' => '15:00', 'fim' => '16:00', 'estado' => 'Ocupado',    'sala' => 'Sala 102', 'tipo_uso' => 'Estudo Individual'],
+                        ['inicio' => '16:00', 'fim' => '17:00', 'estado' => 'Disponível', 'sala' => 'Sala 203', 'tipo_uso' => 'Trabalho de Grupo'],
+                        ['inicio' => '17:00', 'fim' => '18:00', 'estado' => 'Disponível', 'sala' => 'Sala 104', 'tipo_uso' => 'Estudo Individual'],
                     ];
                 @endphp
 
@@ -206,21 +202,16 @@
                     @php
                         $inicio = is_array($item) ? $item['inicio'] : substr($item->hora_inicio, 0, 5);
                         $fim = is_array($item) ? $item['fim'] : substr($item->hora_fim, 0, 5);
-                        $livres = is_array($item) ? $item['livres'] : ($item->salas_livres ?? rand(1, 10));
-                        $isOcupado = $livres === 0;
+                        $estado = is_array($item) ? $item['estado'] : ($item->estado ?? 'Disponível');
+                        $nomeSala = is_array($item) ? $item['sala'] : ($item->sala->nome_numero ?? $item->sala_nome ?? '—');
+                        $tipoUso = is_array($item) ? $item['tipo_uso'] : ($item->tipo_de_uso ?? 'Estudo Individual');
+
+                        $isOcupado = strtolower($estado) === 'ocupado' || strtolower($estado) === 'lotação esgotada';
                     @endphp
                     <tr>
                         <td class="fw-bold text-white fs-6">
                             <i class="bi bi-clock me-2 text-white-50"></i>
                             {{ $inicio }} — {{ $fim }}
-                        </td>
-                        <td class="text-white-50">
-                            1 Hora
-                        </td>
-                        <td>
-                                <span class="fw-semibold {{ $isOcupado ? 'text-white-50' : 'text-white' }}">
-                                    {{ $livres }} {{ $livres == 1 ? 'sala disponível' : 'salas disponíveis' }}
-                                </span>
                         </td>
                         <td>
                             @if(!$isOcupado)
@@ -229,9 +220,16 @@
                                 <span class="badge-status badge-ocupado">Lotação Esgotada</span>
                             @endif
                         </td>
+                        <td class="fw-bold text-white">
+                            <i class="bi bi-door-open me-1 text-white-50"></i>
+                            {{ $nomeSala }}
+                        </td>
+                        <td class="text-white-50">
+                            {{ $tipoUso }}
+                        </td>
                         <td class="text-end">
                             @if(!$isOcupado)
-                                <a href="{{ route('reservas.create', ['data' => $dataString, 'horario' => $inicio]) }}" class="btn-liquid-sm">
+                                <a href="{{ route('reservas.create', ['data' => $dataString, 'horario' => $inicio, 'sala' => $nomeSala]) }}" class="btn-liquid-sm">
                                     Reservar <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             @else
@@ -248,8 +246,8 @@
 </main>
 
 <!-- ================= 3. RODAPÉ ================= -->
-<footer class="p-4 text-center text-white-50 text-uppercase border-top border-white-10 position-relative z-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
-    © {{ date('Y') }} Universidade Fernando Pessoa · Gestão de Lotação de Espaços
+<footer class="p-4 text-center text-white-50 text-uppercase position-relative z-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
+    © {{ date('Y') }} Universidade Fernando Pessoa · Gestão de Espaços
 </footer>
 
 <!-- Bootstrap JS Bundle -->

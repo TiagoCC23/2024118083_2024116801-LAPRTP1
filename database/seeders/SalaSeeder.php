@@ -14,7 +14,7 @@ class SalaSeeder extends Seeder
         $edificio = Edificio::where('sigla', 'FCH')->first() ?? Edificio::first();
 
         if (!$edificio) {
-            $this->command->error('Nenhum edifício foi encontrado! Execute o EdificioSeeder primeiro.'); // debug, dps tira
+            $this->command->error('Nenhum edifício foi encontrado! Execute o EdificioSeeder primeiro.');
             return;
         }
 
@@ -23,6 +23,7 @@ class SalaSeeder extends Seeder
             'tipo_sala' => 'Sala de Aula',
             'capacidade_maxima' => 30,
             'piso' => 3,
+            'disponibilidade' => 'disponivel',
             'edificio_id' => $edificio->id,
         ]);
 
@@ -31,6 +32,7 @@ class SalaSeeder extends Seeder
             'tipo_sala' => 'Sala de Aula',
             'capacidade_maxima' => 30,
             'piso' => 2,
+            'disponibilidade' => 'ocupado',
             'edificio_id' => $edificio->id,
         ]);
 
