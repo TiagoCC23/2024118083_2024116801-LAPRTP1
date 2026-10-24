@@ -105,7 +105,7 @@ Em qualquer modalidade, a reserva indica sempre o número de pessoas que vão oc
 | tipo_user | | Tipo do utilizador (se é admin, normal ou email da ufp) |
 | edificio_id | FK | Identificador da sala administrada pelo admin |
 | criado_em | | Data da criação da conta |
-| eliminado_em | | | Data da eliminação da conta |
+| eliminado_em | | Data da eliminação da conta |
 
 ## Reserva:
 | Atributo | Chave | Descrição |
