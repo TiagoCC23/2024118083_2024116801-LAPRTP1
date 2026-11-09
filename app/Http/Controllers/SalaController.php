@@ -43,7 +43,7 @@ class SalaController extends Controller
             })
             ->get();
 
-        return view('sala.disponibilidade', compact('salasDisponiveis', 'dataRequest', 'capacidadeRequest'));
+        return view('salas.disponibilidade', compact('salasDisponiveis', 'dataRequest', 'capacidadeRequest'));
     }
 
 

@@ -17,15 +17,16 @@ class AvaliacaoController extends Controller
             'reserva_id' => ['required', 'integer', 'exists:reservas,id', Rule::unique('avaliacoes', 'reserva_id')->ignore($avaliacao)],
             ];
     }
-public function minhasAvaliacoes()
-{
-$userId = Auth::id();
+    public function minhasAvaliacoes()
+    {
+        $userId = Auth::id();
 
-$avaliacoes = Avaliacao::whereHas('reserva', function ($query) use ($userId) {
-    $query->where('utilizador_id', $userId);
-})->get();
-return view('avaliacoes.self', compact($avaliacoes));
-}
+        $avaliacoes = Avaliacao::whereHas('reserva', function ($query) use ($userId) {
+            $query->where('utilizador_id', $userId);
+        })->get();
+
+        return view('avaliacoes.self', compact('avaliacoes'));
+    }
 
 
     /**

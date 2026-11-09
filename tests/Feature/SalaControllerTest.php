@@ -120,7 +120,7 @@ class SalaControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertViewIs('sala.disponibilidade');
+        $response->assertViewIs('salas.disponibilidade');
         $response->assertViewHas('salasDisponiveis');
     }
 }

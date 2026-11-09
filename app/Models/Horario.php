@@ -18,6 +18,6 @@ class Horario extends Model
 
     public function getIntervaloAttribute(): string
     {
-        return substr($this->hora_inicio, 0, 5) . ' - ' . substr($this->hora_fim, 0, 5); // ex.: 09:00 - 10:00
+        return substr($this->hora_inicio, 0, 5) . ' - ' . substr($this->hora_fim, 0, 5);
     }
 }

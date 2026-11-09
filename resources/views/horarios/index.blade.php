@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UFP - Grade de Horários</title>
+    <title>UFP - Horário Semanal</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,81 +44,84 @@
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* Tabela Estilizada Dark */
-        .table-horarios {
+        /* Tabela Matriz Semanal */
+        .table-weekly {
             color: rgba(255, 255, 255, 0.85) !important;
             margin-bottom: 0;
-            vertical-align: middle;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
-        .table-horarios th {
-            background: rgba(255, 255, 255, 0.05) !important;
-            color: rgba(255, 255, 255, 0.6) !important;
-            font-size: 0.7rem !important;
+        /* Cabeçalho dos Dias da Semana */
+        .table-weekly th.header-day {
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+            font-size: 0.75rem !important;
             text-transform: uppercase !important;
             letter-spacing: 0.12em !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-            padding: 1rem 1.25rem !important;
+            text-align: center;
+            padding: 1rem 0.5rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
-        .table-horarios td {
-            background: transparent !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-            padding: 1rem 1.25rem !important;
-            font-size: 0.85rem;
+        /* Coluna Lateral das Horas */
+        .table-weekly td.header-hour {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-align: center;
+            vertical-align: middle;
+            width: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
-        .table-horarios tbody tr {
+        /* Células de Conteúdo */
+        .table-weekly td.slot-cell {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            height: 60px;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0.4rem !important;
             transition: all 0.2s ease;
         }
 
-        .table-horarios tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05) !important;
+        .table-weekly td.slot-cell:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
         }
 
-        /* Badges de Lotação / Ocupação */
-        .badge-status {
-            font-size: 0.65rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 0.35rem 0.75rem;
-            border-radius: 50rem;
+        /* Item de Reserva dentro do Slot */
+        .slot-item {
+            display: block;
+            padding: 0.3rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
             font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s ease;
         }
-        .badge-livre {
+        .slot-item:hover {
+            transform: scale(1.03);
+        }
+
+        .slot-free {
             background: rgba(16, 185, 129, 0.15);
             color: #34d399;
             border: 1px solid rgba(52, 211, 153, 0.3);
         }
-        .badge-ocupado {
+
+        .slot-busy {
             background: rgba(239, 68, 68, 0.15);
             color: #f87171;
             border: 1px solid rgba(248, 113, 113, 0.3);
-        }
-
-        /* Botão Ação Liquid */
-        .btn-liquid-sm {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 0.7rem;
-            padding: 0.4rem 1rem;
-            border-radius: 50rem;
-            border: none;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .btn-liquid-sm:hover {
-            background-color: #e2e8f0;
-            color: #000000;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body class="font-body min-vh-100 d-flex flex-column justify-content-between">
 
-<!-- Cabeçalho -->
+<!-- CABEÇALHO -->
 <header class="p-4 p-md-5 d-flex justify-content-between align-items-center position-relative z-3">
     <a href="{{ url('/home') }}" class="text-white text-decoration-none font-display fs-4 fw-bold tracking-tight">
         UFP <span class="fw-normal text-white-50">SALAS</span>
@@ -137,105 +140,80 @@
     </div>
 </header>
 
-<!-- ================= 2. CONTEÚDO CENTRAL ================= -->
-<main class="container my-auto py-5 position-relative z-3" style="max-width: 1000px;">
+<!-- CONTEÚDO CENTRAL -->
+<main class="container-fluid px-3 px-md-5 my-auto py-4 position-relative z-3">
 
-    <!-- PAINEL SUPERIOR: MESMAS INFORMAÇÕES QUE NA RESERVA -->
-    <div class="liquid-glass-card p-4 p-md-4 mb-4">
-        <div class="row align-items-center g-3">
-            <div class="col-md-8">
-                <span class="badge bg-white bg-opacity-10 text-white border border-white-20 rounded-pill px-3 py-1 text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.15em;">
-                    Universidade Fernando Pessoa
-                </span>
-                <h3 class="font-display text-uppercase text-white fw-bold mb-1">
-                    Grade Horária de Disponibilidade
-                </h3>
+    <!-- PAINEL SUPERIOR: CRONOGRAMA SEMANAL -->
+    <div class="liquid-glass-card p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h2 class="font-display text-uppercase text-white fw-bold mb-1">
+                    Horário Semanal
+                </h2>
                 <p class="text-white-50 small mb-0">
-                    Consulte os slots de 1 hora para planeamento das salas de estudo.
+                    Visão geral da disponibilidade de salas para esta semana.
                 </p>
             </div>
-            <div class="col-md-4 text-md-end">
-                @php
-                    $dataString = request('data', date('Y-m-d'));
-                    $carbonData = \Carbon\Carbon::parse($dataString)->locale('pt');
-                @endphp
-                <div class="d-inline-block text-start text-md-end border-start border-md-0 ps-3 ps-md-0">
-                    <span class="text-uppercase text-white-50 small d-block" style="font-size: 0.65rem; letter-spacing: 0.1em;">Data Selecionada</span>
-                    <span class="fw-bold text-white fs-5">{{ $carbonData->format('d/m/Y') }}</span>
-                    <span class="text-white-50 small d-block">({{ ucfirst($carbonData->translatedFormat('l')) }})</span>
-                </div>
+
+            <!-- Navegação de Semana -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-white-50 small text-uppercase" style="letter-spacing: 0.1em;">Semana de:</span>
+                <span class="badge bg-white text-dark fs-6 px-3 py-2 fw-bold rounded-pill">
+                    {{ date('d/m/Y') }}
+                </span>
             </div>
         </div>
     </div>
 
-    <!-- TABELA DE HORÁRIOS -->
+    <!-- GRADE MATRIZ ESTILO SCHEDULE -->
     <div class="liquid-glass-card p-3 p-md-4">
         <div class="table-responsive">
-            <table class="table table-horarios align-middle">
+            <table class="table table-weekly align-middle">
                 <thead>
                 <tr>
-                    <th>Horário</th>
-                    <th>Disponibilidade</th>
-                    <th>Sala</th>
-                    <th>Tipo de Uso</th>
-                    <th class="text-end">Ação</th>
+                    <th class="header-day" style="width: 100px;">Hora</th>
+                    <th class="header-day">Segunda</th>
+                    <th class="header-day">Terça</th>
+                    <th class="header-day">Quarta</th>
+                    <th class="header-day">Quinta</th>
+                    <th class="header-day">Sexta</th>
+                    <th class="header-day">Sábado</th>
+                    <th class="header-day">Domingo</th>
                 </tr>
                 </thead>
                 <tbody>
                 @php
-                    // Lista estática/dinâmica com os campos ajustados
-                    $blocosHorarios = $horarios ?? [
-                        ['inicio' => '08:00', 'fim' => '09:00', 'estado' => 'Disponível', 'sala' => 'Sala 101', 'tipo_uso' => 'Estudo Individual'],
-                        ['inicio' => '09:00', 'fim' => '10:00', 'estado' => 'Disponível', 'sala' => 'Sala 102', 'tipo_uso' => 'Trabalho de Grupo'],
-                        ['inicio' => '10:00', 'fim' => '11:00', 'estado' => 'Disponível', 'sala' => 'Sala 201', 'tipo_uso' => 'Estudo Individual'],
-                        ['inicio' => '11:00', 'fim' => '12:00', 'estado' => 'Ocupado',    'sala' => 'Sala 101', 'tipo_uso' => 'Trabalho de Grupo'],
-                        ['inicio' => '12:00', 'fim' => '13:00', 'estado' => 'Disponível', 'sala' => 'Auditório A', 'tipo_uso' => 'Reunião'],
-                        ['inicio' => '13:00', 'fim' => '14:00', 'estado' => 'Disponível', 'sala' => 'Sala 103', 'tipo_uso' => 'Estudo Individual'],
-                        ['inicio' => '14:00', 'fim' => '15:00', 'estado' => 'Disponível', 'sala' => 'Sala 202', 'tipo_uso' => 'Trabalho de Grupo'],
-                        ['inicio' => '15:00', 'fim' => '16:00', 'estado' => 'Ocupado',    'sala' => 'Sala 102', 'tipo_uso' => 'Estudo Individual'],
-                        ['inicio' => '16:00', 'fim' => '17:00', 'estado' => 'Disponível', 'sala' => 'Sala 203', 'tipo_uso' => 'Trabalho de Grupo'],
-                        ['inicio' => '17:00', 'fim' => '18:00', 'estado' => 'Disponível', 'sala' => 'Sala 104', 'tipo_uso' => 'Estudo Individual'],
-                    ];
+                    // Lista das Horas (de 08:00 a 20:00)
+                    $horas = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+                    $diasSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
                 @endphp
 
-                @foreach($blocosHorarios as $item)
-                    @php
-                        $inicio = is_array($item) ? $item['inicio'] : substr($item->hora_inicio, 0, 5);
-                        $fim = is_array($item) ? $item['fim'] : substr($item->hora_fim, 0, 5);
-                        $estado = is_array($item) ? $item['estado'] : ($item->estado ?? 'Disponível');
-                        $nomeSala = is_array($item) ? $item['sala'] : ($item->sala->nome_numero ?? $item->sala_nome ?? '—');
-                        $tipoUso = is_array($item) ? $item['tipo_uso'] : ($item->tipo_de_uso ?? 'Estudo Individual');
-
-                        $isOcupado = strtolower($estado) === 'ocupado' || strtolower($estado) === 'lotação esgotada';
-                    @endphp
+                @foreach($horas as $hora)
                     <tr>
-                        <td class="fw-bold text-white fs-6">
-                            <i class="bi bi-clock me-2 text-white-50"></i>
-                            {{ $inicio }} — {{ $fim }}
+                        <!-- Coluna Lateral Vermelha/Destacada com a Hora -->
+                        <td class="header-hour">
+                            {{ $hora }}
                         </td>
-                        <td>
-                            @if(!$isOcupado)
-                                <span class="badge-status badge-livre">Disponível</span>
-                            @else
-                                <span class="badge-status badge-ocupado">Lotação Esgotada</span>
-                            @endif
-                        </td>
-                        <td class="fw-bold text-white">
-                            <i class="bi bi-door-open me-1 text-white-50"></i>
-                            {{ $nomeSala }}
-                        </td>
-                        <td class="text-white-50">
-                            {{ $tipoUso }}
-                        </td>
-                        <td class="text-end">
-                            @if(!$isOcupado)
-                                <a href="{{ route('reservas.create', ['data' => $dataString, 'horario' => $inicio, 'sala' => $nomeSala]) }}" class="btn-liquid-sm">
-                                    Reservar <i class="bi bi-arrow-right ms-1"></i>
-                                </a>
-                            @else
-                                <span class="text-white-50 small pe-2">—</span>
-                            @endif
-                        </td>
+
+                        <!-- Células dos Dias da Semana -->
+                        @foreach($diasSemana as $dia)
+                            @php
+                                // Exemplo de simulação de disponibilidade por slot
+                                $isOcupado = ($hora == '11:00' && $dia == 'Quarta') || ($hora == '15:00' && $dia == 'Sexta');
+                            @endphp
+
+                            <td class="slot-cell">
+                                @if($isOcupado)
+                                    <span class="slot-item slot-busy">
+                                            <i class="bi bi-x-circle me-1"></i> Ocupado
+                                        </span>
+                                @else
+                                    <a href="{{ route('reservas.create', ['horario' => $hora, 'dia' => $dia]) }}" class="slot-item slot-free">
+                                        <i class="bi bi-plus-circle me-1"></i> Livre
+                                    </a>
+                                @endif
+                            </td>
+                        @endforeach
                     </tr>
                 @endforeach
                 </tbody>
@@ -245,7 +223,7 @@
 
 </main>
 
-<!-- ================= 3. RODAPÉ ================= -->
+<!-- RODAPÉ -->
 <footer class="p-4 text-center text-white-50 text-uppercase position-relative z-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
     © {{ date('Y') }} Universidade Fernando Pessoa · Gestão de Espaços
 </footer>
