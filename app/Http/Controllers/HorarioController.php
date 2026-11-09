@@ -25,7 +25,7 @@ class HorarioController extends Controller
      */
     public function index()
     {
-        $horarios = Horario::all();
+        $horarios = Horario::with('salas')->get();
         return view('horarios.index', compact('horarios'));
     }
 
