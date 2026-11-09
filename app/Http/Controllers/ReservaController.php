@@ -53,7 +53,7 @@ return view('reservas.index', compact('reservas'));
      */
     public function index()
     {
-        $reservas = Reserva::all();
+        $reservas = Reserva::with('utilizador', 'sala')->get();
         return view('reservas.index', compact('reservas'));
     }
 

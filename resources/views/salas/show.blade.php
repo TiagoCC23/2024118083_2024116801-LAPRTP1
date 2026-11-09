@@ -9,7 +9,7 @@
     <p>Tipo Sala: {{$sala->tipo_sala}}</p>
     <p>Disponibilidade: {{$sala->disponibilade}}</p>
     <p>Piso: {{$sala->piso}}</p>
-    <p>Edificio ID: {{$sala->edificio_id}}</p>
+    <p>Edifício ID: {{$sala->edificio_id}}</p>
 
     <a href="{{route('salas.index')}}">Voltar à lista</a>
     <a href="{{route('salas.edit', $sala->id)}}">Editar este sala</a>

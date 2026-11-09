@@ -17,25 +17,7 @@
 
 <form action="{{ route('avaliacoes.store') }}" method="POST">
     @csrf                               <!--Impede ataques crossfire -->
-    <!-- Nota da Avaliação -->
-    <div>
-        <label for="nome">Nota da avaliação</label><br>
-        <input type="number" id="nota" name="nota" value="{{ old('nota')}}" placeholder="0-5">
-    </div>
-
-    <!-- Comentário -->
-    <div>
-        <label for="nome">Comentário</label><br>
-        <input type="text" id="comentario" name="comentario" value="{{ old('comentario')}}" placeholder="Comentário">
-    </div>
-
-    <!-- Id da reserva -->
-    <div>
-        <label for="nome">Reserva ID</label><br>
-        <input type="number" id="reservaID" name="reservaID" value="{{ old('reservaID')}}" placeholder="ID da reserva">
-    </div>
-
-    <button type="submit">Gravar Avaliação</button>
+@include('avaliacoes._form')
 </form>
 <br>
 <a href="{{ route('avaliacoes.index') }}">Cancelar e Voltar à Lista</a>

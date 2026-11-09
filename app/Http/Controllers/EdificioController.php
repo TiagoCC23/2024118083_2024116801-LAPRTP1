@@ -27,7 +27,8 @@ class EdificioController extends Controller
      */
     public function index()
     {
-        //
+        $edificios = Edificio::with('salas')->get();
+        return view('edificios.index', compact('edificios'));
     }
 
     /**

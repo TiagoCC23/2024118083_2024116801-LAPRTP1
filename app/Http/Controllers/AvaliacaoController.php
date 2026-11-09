@@ -33,7 +33,7 @@ return view('avaliacoes.self', compact($avaliacoes));
      */
     public function index()
     {
-        $avaliacao = Avaliacao::all();
+        $avaliacao = Avaliacao::with('reserva')->get();
         return view('avaliacoes.index', compact('avaliacao'));
     }
 
