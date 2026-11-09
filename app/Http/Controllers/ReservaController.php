@@ -25,7 +25,7 @@ class ReservaController extends Controller
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
             'estado'             => ['required', Rule::enum(EstadoReserva::class)],
             'criado_em'          => 'required|date_format:Y-m-d H:i:s',
-            'eliminado_em'          => 'required|date_format:Y-m-d H:i:s, after:criado_em',
+            'eliminado_em'          => 'nullable|date_format:Y-m-d H:i:s, after:criado_em',
             'tipo_de_uso'        => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
             'sala_id'            => 'required|integer|exists:salas,id',
             'utilizador_id'      => ['required', 'integer', 'exists:utilizadores,id'],
@@ -64,7 +64,8 @@ class ReservaController extends Controller
      */
     public function create()
     {
-        return view('reservas.create');
+        $reserva = new Reserva();
+        return view('reservas.create', compact('reserva'));
     }
 
     /**

@@ -43,7 +43,8 @@ class AvaliacaoController extends Controller
      */
     public function create()
     {
-        return view('avaliacoes.create');
+        $avaliacao = new Avaliacao();
+        return view('avaliacoes.create', compact('avaliacao'));
     }
 
     /**
