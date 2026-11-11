@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller{
 
@@ -48,11 +49,12 @@ class AuthController extends Controller{
             'email' => $dados['email'],
             'password_hash' => Hash::make($dados['password']), /* faz o hash */
             'tipo_user' => $dados['tipo_user'],
-            'verificado_em' => now(),
         ]);
+        event(new Registered($utilizador));
         Auth::login($utilizador);
         $request->session()->regenerate(); /*Regenera a sessao apos a criacao de conta*/
-        return redirect()->route('reservas.index')->with('success', 'Conta criada com sucesso');
+        return redirect()->route('verification.notice');
+        /*return redirect()->route('reservas.index')->with('success', 'Conta criada com sucesso');*/
     }
     public function deleteAccount(Request $request)
     {

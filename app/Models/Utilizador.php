@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class Utilizador extends Authenticatable
 {
@@ -43,6 +44,16 @@ class Utilizador extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->tipo_user === 'admin';
+    }
+
+    public function hasVerifiedEmail()
+    {
+        return !is_null($this->verificado_em);
+    }
+
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill(['verificado_em' => $this->timestamps(),])->save();
     }
 
     public function edificio(): BelongsTo
