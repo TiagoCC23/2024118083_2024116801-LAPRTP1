@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 
-class Utilizador extends Authenticatable
+class Utilizador extends Authenticatable implements MustVerifyEmail
 {
-    use SoftDeletes, Atualizacoes;
+    use SoftDeletes, Atualizacoes, Notifiable;
 
     protected $table = 'utilizadores';
-    protected $fillable = ['nome', 'email', 'verificado_em', 'password_hash', 'tipo_user', 'edificio_id'];
+    protected $fillable = ['nome', 'email', 'verificado_em',     'password_hash', 'tipo_user', 'edificio_id'];
     protected $hidden = ['password_hash'];
 
     protected function casts(): array
@@ -53,7 +54,7 @@ class Utilizador extends Authenticatable
 
     public function markEmailAsVerified()
     {
-        return $this->forceFill(['verificado_em' => $this->timestamps(),])->save();
+        return $this->forceFill(['verificado_em' => now(),])->save();
     }
 
     public function edificio(): BelongsTo

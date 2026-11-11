@@ -42,19 +42,18 @@ class AuthController extends Controller{
             'nome' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', Rule::unique('utilizadores', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'tipo_user' => ['required', 'in:estudante,normal'],/* Os admins são criados no seeder/painel. */
+            /*'tipo_user' => ['required', 'in:estudante,normal'],*//* Os admins são criados no seeder/painel. */
         ]);
         $utilizador = Utilizador::create([
             'nome' => $dados['nome'],
             'email' => $dados['email'],
             'password_hash' => Hash::make($dados['password']), /* faz o hash */
-            'tipo_user' => $dados['tipo_user'],
+            'tipo_user' => 'estudante',
         ]);
         event(new Registered($utilizador));
         Auth::login($utilizador);
         $request->session()->regenerate(); /*Regenera a sessao apos a criacao de conta*/
         return redirect()->route('verification.notice');
-        /*return redirect()->route('reservas.index')->with('success', 'Conta criada com sucesso');*/
     }
     public function deleteAccount(Request $request)
     {
