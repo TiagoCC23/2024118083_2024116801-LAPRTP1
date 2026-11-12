@@ -12,6 +12,14 @@ class EdificioControllerTest extends TestCase
 
     public function test_index_de_edificios_retorna_view_com_lista(): void
     {
+        $user = \App\Models\Utilizador::create([
+    'nome' => 'Estudante Teste',
+    'email' => 'estudante@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'estudante',
+    'verificado_em' => now()
+]);
+        $this->actingAs($user);
         Edificio::create([
             'nome' => 'Edifício Central',
             'sigla' => 'ED01',
@@ -27,6 +35,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_create_retorna_formulario(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $response = $this->get(route('edificios.create'));
 
         $response->assertStatus(200);
@@ -35,6 +52,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_store_cria_edificio_com_sucesso(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $payload = [
             'nome' => 'Edifício Tecnológico',
             'sigla' => 'EDTEC',
@@ -54,6 +80,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_store_falha_quando_campos_obrigatorios_nao_sao_enviados(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $response = $this->post(route('edificios.store'), []);
 
         $response->assertSessionHasErrors(['nome', 'sigla']);
@@ -62,6 +97,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_store_falha_se_sigla_tiver_mais_de_5_caracteres(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $payload = [
             'nome' => 'Edifício Novo',
             'sigla' => 'SIGLA_LONGA', // Máximo permitido é 5
@@ -75,6 +119,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_show_exibe_edificio_existente(): void
     {
+        $user = \App\Models\Utilizador::create([
+    'nome' => 'Estudante Teste',
+    'email' => 'estudante@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'estudante',
+    'verificado_em' => now()
+]);
+        $this->actingAs($user);
+
         $edificio = Edificio::create([
             'nome' => 'Edifício Biblioteca',
             'sigla' => 'BIB',
@@ -92,6 +145,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_edit_exibe_formulario_de_edicao(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $edificio = Edificio::create([
             'nome' => 'Edifício Antigo',
             'sigla' => 'ANT',
@@ -107,6 +169,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_update_atualiza_edificio_com_sucesso(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $edificio = Edificio::create([
             'nome' => 'Nome Antigo',
             'sigla' => 'OLD',
@@ -133,6 +204,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_update_falha_com_dados_invalidos(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $edificio = Edificio::create([
             'nome' => 'Edifício A',
             'sigla' => 'EDA',
@@ -150,6 +230,15 @@ class EdificioControllerTest extends TestCase
 
     public function test_destroy_remove_edificio_do_banco(): void
     {
+        $admin = \App\Models\Utilizador::create([
+    'nome' => 'Admin Teste',
+    'email' => 'admin@ufp.edu.pt',
+    'password_hash' => bcrypt('password123'),
+    'tipo_user' => 'admin',
+    'verificado_em' => now()
+]);;
+        $this->actingAs($admin);
+
         $edificio = Edificio::create([
             'nome' => 'Edifício a Eliminar',
             'sigla' => 'DEL',
@@ -166,6 +255,16 @@ class EdificioControllerTest extends TestCase
 
     public function test_retorna_404_ao_tentar_acessar_edificio_inexistente(): void
     {
+        // Tem de ser ADMIN para não ser bloqueado pelo middleware (abort 403)
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste 404',
+            'email' => 'admin404@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
+
         $idInexistente = 9999;
 
         $this->get(route('edificios.show', $idInexistente))->assertStatus(404);
