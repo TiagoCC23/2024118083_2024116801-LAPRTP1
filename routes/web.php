@@ -19,12 +19,20 @@ Route::get('/home', function () {
 });
 
 // 2. Rotas de Autenticação
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
-Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
+Route::middleware(['guest'])->group(function (){
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
+    Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
+});
+
+Route::middleware(['auth'])->group(function (){
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
+});
+
 
 /* Momento da verificaçao do email*/
 Route::get('/email/verify', function () {
@@ -43,15 +51,30 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Link de verificação reenviado!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-// 3. Rotas personalizadas (devem vir antes dos resources com parâmetros curinga)
-Route::post('/salas/disponibilidade', [SalaController::class, 'checkDisponibilidade'])->name('salas.disponibilidade');
-Route::get('/minhas-reservas', [ReservaController::class, 'minhasReservas'])->name('reservas.minhas');
-Route::patch('/reservas/{reserva}/estado', [ReservaController::class, 'alterarEstado'])->name('reservas.alterarEstado');
-Route::get('/minhas-avaliacoes', [AvaliacaoController::class, 'minhasAvaliacoes'])->name('avaliacoes.minhas');
 
-// 4. Resources
-Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio']);
-Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala']);
-Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario']);
-Route::resource('reservas', ReservaController::class)->parameters(['reservas' => 'reserva']);
-Route::resource('avaliacoes', AvaliacaoController::class)->parameters(['avaliacoes' => 'avaliacao']);
+// 3. Resources - Admin
+Route::middleware(['auth', 'email.verificado', 'admin'])->group(function (){
+    Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->except(['index', 'show']);
+    Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->except(['index', 'show']);
+    Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->except(['index', 'show']);
+    /* TODO FALTA ADICIONAR O PAINEL ADMIN */
+});
+
+// 3. Resources - Users
+
+Route::middleware(['auth', 'email.verificado'])->group(function (){
+    // 4. Rotas personalizadas (devem vir antes dos resources com parâmetros curinga)
+    Route::post('/salas/disponibilidade', [SalaController::class, 'checkDisponibilidade'])->name('salas.disponibilidade');
+    Route::get('/minhas-reservas', [ReservaController::class, 'minhasReservas'])->name('reservas.minhas');
+    Route::patch('/reservas/{reserva}/estado', [ReservaController::class, 'alterarEstado'])->name('reservas.alterarEstado');
+    Route::get('/minhas-avaliacoes', [AvaliacaoController::class, 'minhasAvaliacoes'])->name('avaliacoes.minhas');
+
+    Route::resource('reservas', ReservaController::class)->parameters(['reservas' => 'reserva']);
+    Route::resource('avaliacoes', AvaliacaoController::class)->parameters(['avaliacoes' => 'avaliacao']);
+    Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->only(['index', 'show']);
+    Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->only(['index', 'show']);
+    Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->only(['index', 'show']);
+});
+
+
+

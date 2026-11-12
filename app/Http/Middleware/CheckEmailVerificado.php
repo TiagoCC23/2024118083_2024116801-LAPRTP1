@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CheckEmailVerificado
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  Closure(Request): (Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        if($request->user() && !$request->user()->hasVerifiedEmail()){ /* O utilizador está registado MAS ainda não verificou o email*/
+            return redirect()->route('verification.notice');
+        }
+        return $next($request);
+    }
+}

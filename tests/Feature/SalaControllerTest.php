@@ -14,6 +14,15 @@ class SalaControllerTest extends TestCase
 
     public function test_index_displays_salas()
     {
+        $user = \App\Models\Utilizador::create([
+            'nome' => 'Estudante Teste',
+            'email' => 'estudante@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'estudante',
+            'verificado_em' => now()
+        ]);
+
+        $this->actingAs($user);
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
         Sala::create([
             'nome_numero' => 'Sala 1',
@@ -32,6 +41,15 @@ class SalaControllerTest extends TestCase
 
     public function test_store_creates_sala()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
+
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
 
         $response = $this->post(route('salas.store'), [
@@ -53,6 +71,16 @@ class SalaControllerTest extends TestCase
 
     public function test_update_modifies_sala()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
+
+
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
         $sala = Sala::create([
             'nome_numero' => 'Sala 1',
@@ -83,6 +111,15 @@ class SalaControllerTest extends TestCase
 
     public function test_destroy_deletes_sala()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
+
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
         $sala = Sala::create([
             'nome_numero' => 'Sala 1',
@@ -104,6 +141,16 @@ class SalaControllerTest extends TestCase
 
     public function test_check_disponibilidade()
     {
+        $user = \App\Models\Utilizador::create([
+            'nome' => 'Estudante Teste',
+            'email' => 'estudante@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'estudante',
+            'verificado_em' => now()
+        ]);
+
+        $this->actingAs($user);
+
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
         $sala = Sala::create([
             'nome_numero' => 'Sala 1',
