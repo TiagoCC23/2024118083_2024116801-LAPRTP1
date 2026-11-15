@@ -26,6 +26,56 @@
             color: #ffffff !important;
             min-height: 100vh;
         }
+
+        .navbar-collapse,
+        .navbar-collapse.collapse {
+            visibility: visible !important;
+        }
+
+        .glass-header,
+        .glass-footer {
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .nav-glass-link {
+            color: rgba(255, 255, 255, 0.75) !important;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.45rem 0.8rem !important;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-glass-link:hover,
+        .nav-glass-link.active {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .dropdown-menu-glass {
+            background: rgba(18, 18, 22, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.75rem;
+        }
+
+        .dropdown-menu-glass .dropdown-item {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+        }
+
+        .dropdown-menu-glass .dropdown-item:hover,
+        .dropdown-menu-glass .dropdown-item:focus {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
     </style>
     @stack('styles')
 </head>
@@ -34,34 +84,97 @@
 @hasSection('header')
     @yield('header')
 @else
-    <header class="glass-header border-bottom p-4 px-md-5 d-flex justify-content-between align-items-center position-relative z-3">
-        <a href="{{ route('home') }}" class="text-white text-decoration-none font-display fs-4 fw-bold tracking-tight">
-            UFP <span class="fw-normal text-white-50">SALAS</span>
-        </a>
+    <nav class="navbar navbar-expand-lg navbar-dark glass-header border-bottom px-3 px-md-5 py-3 position-relative z-3">
+        <div class="container-fluid px-0">
+            <a href="{{ route('home') }}" class="navbar-brand text-white font-display fs-4 fw-bold tracking-tight mb-0">
+                UFP <span class="fw-normal text-white-50">SALAS</span>
+            </a>
 
-        @auth
-            <nav class="d-none d-md-flex align-items-center gap-2">
-                <a href="{{ route('home') }}" class="nav-glass-link {{ request()->routeIs('home') ? 'active' : '' }}">Início</a>
-                <a href="{{ route('reservas.index') }}" class="nav-glass-link {{ request()->routeIs('reservas.*') ? 'active' : '' }}">Reservas</a>
-                <a href="{{ route('horarios.index') }}" class="nav-glass-link {{ request()->routeIs('horarios.*') ? 'active' : '' }}">Horários</a>
-                <a href="{{ route('salas.index') }}" class="nav-glass-link {{ request()->routeIs('salas.*') ? 'active' : '' }}">Salas</a>
-                <a href="{{ route('edificios.index') }}" class="nav-glass-link {{ request()->routeIs('edificios.*') ? 'active' : '' }}">Edifícios</a>
-                <a href="{{ route('avaliacoes.index') }}" class="nav-glass-link {{ request()->routeIs('avaliacoes.*') ? 'active' : '' }}">Avaliações</a>
-            </nav>
+            @auth
+                <button class="navbar-toggler border-white border-opacity-25" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#navbarPrincipal"
+                        aria-controls="navbarPrincipal" aria-expanded="false" aria-label="Alternar navegação">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-white-50 small d-none d-sm-inline">
-                    Olá, <strong>{{ Auth::user()->nome }}</strong>
-                </span>
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-link text-white-50 text-decoration-none text-uppercase small p-0">
-                        Sair <i class="bi bi-box-arrow-right ms-1"></i>
-                    </button>
-                </form>
-            </div>
-        @endauth
-    </header>
+                <div class="collapse navbar-collapse" id="navbarPrincipal">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 align-items-lg-center">
+                        <li class="nav-item">
+                            <a href="{{ route('home') }}" class="nav-link nav-glass-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                                <i class="bi bi-house me-1"></i> Início
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('edificios.index') }}" class="nav-link nav-glass-link {{ request()->routeIs('edificios.*') ? 'active' : '' }}">
+                                <i class="bi bi-building me-1"></i> Edifícios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('salas.index') }}" class="nav-link nav-glass-link {{ request()->routeIs('salas.index', 'salas.show', 'salas.create', 'salas.edit') ? 'active' : '' }}">
+                                <i class="bi bi-door-open me-1"></i> Salas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('salas.disponibilidade') }}" class="nav-link nav-glass-link {{ request()->routeIs('salas.disponibilidade') ? 'active' : '' }}">
+                                <i class="bi bi-search me-1"></i> Disponibilidade
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('horarios.index') }}" class="nav-link nav-glass-link {{ request()->routeIs('horarios.*') ? 'active' : '' }}">
+                                <i class="bi bi-clock me-1"></i> Horários
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('reservas.index') }}" class="nav-link nav-glass-link {{ request()->routeIs('reservas.*') ? 'active' : '' }}">
+                                <i class="bi bi-calendar-check me-1"></i> Reservas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('avaliacoes.index') }}" class="nav-link nav-glass-link {{ request()->routeIs('avaliacoes.*') ? 'active' : '' }}">
+                                <i class="bi bi-star me-1"></i> Avaliações
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-white-50 text-decoration-none small dropdown-toggle p-0"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                Olá, <strong class="text-white">{{ Auth::user()->nome }}</strong>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-glass shadow mt-2">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('reservas.create') }}">
+                                        <i class="bi bi-plus-circle me-2"></i> Nova Reserva
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('reservas.minhas') }}">
+                                        <i class="bi bi-journal-bookmark me-2"></i> Minhas Reservas
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('avaliacoes.minhas') }}">
+                                        <i class="bi bi-star-half me-2"></i> Minhas Avaliações
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-white border-opacity-10"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Sair
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            @endauth
+        </div>
+    </nav>
 @endif
 
 <main class="container my-auto py-4 position-relative z-3">

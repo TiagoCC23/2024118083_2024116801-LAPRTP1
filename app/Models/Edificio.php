@@ -11,10 +11,6 @@ class Edificio extends Model
     public $timestamps = false; // -> não mexe nas datas
     protected $fillable = ['nome', 'sigla', 'imagem'];
 
-    public static function orderBy(string $string)
-    {
-    }
-
     public function salas(): HasMany
     {
         return $this->hasMany(Sala::class);
