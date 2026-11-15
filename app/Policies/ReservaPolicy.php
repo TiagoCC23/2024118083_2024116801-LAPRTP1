@@ -50,4 +50,20 @@ class ReservaPolicy
             && $r->data->lte(now()->startOfDay())
             && !$r->avaliacao()->exists();
     }
+
+    public function alterarEstado(Utilizador $u, Reserva $r, EstadoReserva $novoEstado): bool
+    {
+        /* O admin pode alterar o estado da reserva á vontade (aprova ou rejeita) */
+        if($u->isAdmin()){
+            return in_array($novoEstado,
+                [EstadoReserva::Confirmada,
+                 EstadoReserva::Rejeitada,
+                 EstadoReserva::Cancelada],
+                true);
+        }
+        /* O user só pode cancelar a sua reserva caso esta esteja pendente*/
+        return $u->id === $r->utilizador_id && $r->estado === EstadoReserva::Pendente && $novoEstado === EstadoReserva::Cancelada;
+
+    }
+
 }
