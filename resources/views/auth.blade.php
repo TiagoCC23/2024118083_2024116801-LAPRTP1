@@ -78,11 +78,11 @@
 @section('header')
     <header class="p-4 p-md-5 d-flex justify-content-end align-items-center position-relative z-3">
         <div class="d-flex align-items-center gap-3">
-            <button type="button" id="btn-tab-login" class="tab-btn active">
+            <button type="button" id="btn-tab-login" class="tab-btn {{ !$isRegisto ? 'active' : '' }}">
                 ENTRAR
             </button>
             <span class="text-white-50">|</span>
-            <button type="button" id="btn-tab-register" class="tab-btn">
+            <button type="button" id="btn-tab-register" class="tab-btn {{ $isRegisto ? 'active' : '' }}">
                 REGISTAR
             </button>
         </div>
@@ -115,7 +115,7 @@
         @endif
 
         <!-- Formulário 1: Login -->
-        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start">
+        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start {{ $isRegisto ? 'd-none' : '' }}">
             @csrf
 
             <div class="mb-4">
@@ -149,7 +149,7 @@
         </form>
 
         <!-- Formulário 2: Registo -->
-        <form id="form-register" action="{{ route('register') }}" method="POST" class="text-start d-none">
+        <form id="form-register" action="{{ route('register') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
             @csrf
             <input type="hidden" name="_form" value="registo">
 
@@ -215,11 +215,13 @@
                 formRegister.classList.add('d-none');
                 btnLogin?.classList.add('active');
                 btnRegister?.classList.remove('active');
+                window.history.replaceState(null, '', '/login');
             } else if (btn.id === 'btn-tab-register') {
                 formLogin.classList.add('d-none');
                 formRegister.classList.remove('d-none');
                 btnRegister?.classList.add('active');
                 btnLogin?.classList.remove('active');
+                window.history.replaceState(null, '', '/registo');
             }
         });
     </script>
