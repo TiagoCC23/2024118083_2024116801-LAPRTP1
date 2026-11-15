@@ -13,29 +13,29 @@ use Illuminate\Auth\Events\Registered;
 class AuthController extends Controller{
 
     public function showLogin(){
-        return view('auth', ['tab' => 'login']);
+        return view('auth.auth', ['tab' => 'login']);
     }
     public function showRegisto()
     {
-        return view('auth', ['tab' => 'registo']);
+        return view('auth.auth', ['tab' => 'registo']);
     }
 
     public function login(Request $request)
     {
-    $dados = $request->validate(['email'=>['required', 'email'],
-                                 'password'=>['required'],]);
-    if(!Auth::attempt($dados)){ /*Caso ele falhe na autenticaçao, ele volta a onde estavamos e */
-        return back()->withErrors(['email' => 'Dados Inválidos.'])->onlyInput('email');
-    }
-    $request->session()->regenerate(); /* evita que a sessão fique fixa **/
-    return redirect()->intended(route('reservas.index'));
+        $dados = $request->validate(['email'=>['required', 'email'],
+                                     'password'=>['required'],]);
+        if(!Auth::attempt($dados)){ /*Caso ele falhe na autenticaçao, ele volta a onde estavamos e */
+            return back()->withErrors(['email' => 'Dados Inválidos.'])->onlyInput('email');
+        }
+        $request->session()->regenerate(); /* evita que a sessão fique fixa **/
+        return redirect()->intended(route('reservas.index'));
     }
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('salas.index');
+        return redirect()->route('home');
     }
     public function signin(Request $request)
     {
