@@ -9,7 +9,13 @@
                 Cronograma de Reservas
             </h1>
 
-            <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <!-- Filtro de Pesquisa -->
+                <form method="GET" action="{{ route('reservas.index') }}" class="d-flex gap-2">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Pesquisar..." class="form-control glass-input py-1 px-3 small">
+                    <button type="submit" class="btn btn-glass-secondary">Filtrar</button>
+                </form>
+
                 <a href="{{ route('reservas.create') }}" class="btn btn-minimal">
                     <i class="bi bi-plus-lg me-1"></i> Nova Reserva
                 </a>
@@ -22,54 +28,65 @@
                     <thead>
                     <tr>
                         <th>Data</th>
-                        <th>Horário</th>
+                        <th>Horários</th>
                         <th>Edifício</th>
                         <th>Sala</th>
                         <th>Tipo de Uso</th>
-                        <th>Nº Pessoas</th>
+                        <th>Pessoas</th>
                         <th class="text-center">Estado</th>
+                        <th class="text-end">Ações</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse ($reservasCsv ?? $reservas ?? [] as $linha)
+                    @forelse ($reservas as $reserva)
                         <tr>
                             <td class="fw-semibold text-white">
                                 <i class="bi bi-calendar3 me-2 text-white-50"></i>
-                                {{ $linha['data'] ?? $linha->data ?? '—' }}
+                                {{ $reserva->data?->format('d/m/Y') }}
                             </td>
                             <td>
-                                <i class="bi bi-clock me-1 text-white-50"></i>
-                                {{ $linha['horario'] ?? $linha->horario ?? '—' }}
+                                @foreach($reserva->horarios as $h)
+                                    <span class="badge bg-white bg-opacity-10 text-white me-1">{{ substr($h->hora_inicio, 0, 5) }}</span>
+                                @endforeach
                             </td>
                             <td class="text-white-50">
-                                {{ $linha['edificio'] ?? $linha->edificio->nome ?? '—' }}
+                                {{ $reserva->sala->edificio->nome ?? '—' }}
                             </td>
                             <td class="fw-bold text-white">
-                                {{ $linha['sala'] ?? $linha->sala->nome_numero ?? '—' }}
+                                {{ $reserva->sala->nome_numero ?? '—' }}
                             </td>
                             <td class="text-white-50">
-                                {{ $linha['tipo_de_uso'] ?? $linha->tipo_de_uso ?? 'Estudo' }}
+                                {{ $reserva->tipo_de_uso }}
                             </td>
                             <td class="text-white-50">
-                                <i class="bi bi-people me-1"></i> {{ $linha['quantidade_pessoas'] ?? $linha->quantidade_pessoas ?? 1 }}
+                                <i class="bi bi-people me-1"></i> {{ $reserva->quantidade_pessoas }}
                             </td>
                             <td class="text-center">
-                                @php
-                                    $estado = strtolower($linha['estado'] ?? $linha->estado ?? 'pendente');
-                                    $badgeClass = match($estado) {
-                                        'confirmada' => 'badge-confirmada',
-                                        'cancelada', 'rejeitada' => 'badge-cancelada',
-                                        default => 'badge-pendente',
-                                    };
-                                @endphp
-                                <span class="badge-status {{ $badgeClass }}">
-                                    {{ ucfirst($estado) }}
-                                </span>
+                                {{-- Uso do Componente Reutilizável Blade (Aula 06) --}}
+                                <x-badge-status :estado="$reserva->estado" />
+                            </td>
+                            <td class="text-end">
+                                {{-- Autorização na Vista com @can (Aula 08, slide 10) --}}
+                                @can('update', $reserva)
+                                    <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                @endcan
+
+                                @can('delete', $reserva)
+                                    <form action="{{ route('reservas.destroy', $reserva) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja eliminar esta reserva?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-white-50">
+                            <td colspan="8" class="text-center py-4 text-white-50">
                                 Não existem reservas registadas de momento.
                             </td>
                         </tr>
@@ -77,6 +94,12 @@
                     </tbody>
                 </table>
             </div>
+
+            @if($reservas instanceof \Illuminate\Contracts\Pagination\Paginator)
+                <div class="mt-3">
+                    {{ $reservas->links() }}
+                </div>
+            @endif
         </div>
     </div>
 @endsection

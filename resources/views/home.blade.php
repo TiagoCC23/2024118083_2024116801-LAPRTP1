@@ -53,3 +53,28 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calendarInline = document.getElementById('calendar-inline');
+            if (calendarInline && typeof window.flatpickr !== 'undefined') {
+                const inputData = document.getElementById('input-data-selecionada');
+                const badgeData = document.getElementById('data-selecionada-badge');
+
+                window.flatpickr(calendarInline, {
+                    inline: true,
+                    minDate: "today",
+                    dateFormat: "Y-m-d",
+                    defaultDate: "today",
+                    onChange: function (selectedDates, dateStr) {
+                        if (inputData) inputData.value = dateStr;
+                        if (badgeData && selectedDates[0]) {
+                            badgeData.innerText = selectedDates[0].toLocaleDateString('pt-PT');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+@endpush

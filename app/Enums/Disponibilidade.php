@@ -10,6 +10,10 @@ enum Disponibilidade: string
 
     public function label(): string
     {
-        return $this->value;
+        return match($this) {
+            self::Disponivel => 'Disponivel',
+            self::Pendente => 'Pendente',
+            self::Ocupado => 'Ocupado',
+        };
     }
 }

@@ -11,6 +11,11 @@ enum EstadoReserva: string
 
     public function label(): string
     {
-        return $this->value;
+        return match($this) {
+            self::Pendente => 'Pendente',
+            self::Confirmada => 'Confirmada',
+            self::Rejeitada => 'Rejeitada',
+            self::Cancelada => 'Cancelada',
+        };
     }
 }

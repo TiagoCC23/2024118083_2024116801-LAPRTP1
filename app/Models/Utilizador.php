@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TipoUtilizador;
 use App\Models\Concerns\Atualizacoes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,7 +17,7 @@ class Utilizador extends Authenticatable implements MustVerifyEmail
     use SoftDeletes, Atualizacoes, Notifiable;
 
     protected $table = 'utilizadores';
-    protected $fillable = ['nome', 'email', 'verificado_em',     'password_hash', 'tipo_user', 'edificio_id'];
+    protected $fillable = ['nome', 'email', 'verificado_em', 'password_hash', 'tipo_user', 'edificio_id'];
     protected $hidden = ['password_hash'];
 
     protected function casts(): array
@@ -24,6 +25,7 @@ class Utilizador extends Authenticatable implements MustVerifyEmail
         return [
             'verificado_em' => 'datetime', // -> coloca a data e hora
             'password_hash' => 'hashed', // -> faz hash automaticamente
+            'tipo_user' => TipoUtilizador::class,
         ];
     }
 
@@ -44,7 +46,7 @@ class Utilizador extends Authenticatable implements MustVerifyEmail
 
     public function isAdmin(): bool
     {
-        return $this->tipo_user === 'admin';
+        return $this->tipo_user === TipoUtilizador::Admin;
     }
 
     public function hasVerifiedEmail()
@@ -54,7 +56,7 @@ class Utilizador extends Authenticatable implements MustVerifyEmail
 
     public function markEmailAsVerified()
     {
-        return $this->forceFill(['verificado_em' => now(),])->save();
+        return $this->forceFill(['verificado_em' => now()])->save();
     }
 
     public function edificio(): BelongsTo

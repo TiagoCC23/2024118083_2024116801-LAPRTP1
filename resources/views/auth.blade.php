@@ -4,7 +4,74 @@
 
 @extends('layouts.app')
 
-@section('title', 'UFP - Salas de Estudo')
+@section('title', 'UFP - Gestão de Espaços')
+
+@push('styles')
+    <style>
+        .btn-login-submit {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.08em !important;
+            font-size: 0.8rem !important;
+            padding: 0.75rem 2.8rem !important;
+            border-radius: 50rem !important;
+            border: none !important;
+            display: inline-block !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+        }
+
+        .btn-login-submit:hover {
+            background-color: #e2e8f0 !important;
+            color: #000000 !important;
+            transform: translateY(-1px);
+        }
+
+        .minimal-input {
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
+            color: #ffffff !important;
+            border-radius: 0 !important;
+            padding: 0.6rem 0 !important;
+            box-shadow: none !important;
+        }
+
+        .minimal-input:focus {
+            background: transparent !important;
+            border-bottom: 2px solid #ffffff !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        .minimal-input::placeholder {
+            color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        .tab-btn {
+            background: none !important;
+            border: none !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.12em !important;
+            padding-bottom: 0.25rem !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            border-bottom: 2px solid #ffffff !important;
+        }
+    </style>
+@endpush
 
 {{-- Cabeçalho com as abas --}}
 @section('header')
@@ -89,7 +156,7 @@
                     NOME COMPLETO *
                 </label>
                 <input type="text" id="reg-nome" name="nome" value="{{ old('nome') }}" required
-                       placeholder="O seu Nome" class="form-control minimal-input">
+                       placeholder="Nome" class="form-control minimal-input">
             </div>
 
             <div class="mb-4">
@@ -125,3 +192,33 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#btn-tab-login, #btn-tab-register');
+            if (!btn) return;
+
+            e.preventDefault();
+
+            const formLogin = document.getElementById('form-login');
+            const formRegister = document.getElementById('form-register');
+            const btnLogin = document.getElementById('btn-tab-login');
+            const btnRegister = document.getElementById('btn-tab-register');
+
+            if (!formLogin || !formRegister) return;
+
+            if (btn.id === 'btn-tab-login') {
+                formLogin.classList.remove('d-none');
+                formRegister.classList.add('d-none');
+                btnLogin?.classList.add('active');
+                btnRegister?.classList.remove('active');
+            } else if (btn.id === 'btn-tab-register') {
+                formLogin.classList.add('d-none');
+                formRegister.classList.remove('d-none');
+                btnRegister?.classList.add('active');
+                btnLogin?.classList.remove('active');
+            }
+        });
+    </script>
+@endpush

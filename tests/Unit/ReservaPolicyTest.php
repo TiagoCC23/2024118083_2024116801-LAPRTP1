@@ -26,7 +26,7 @@ class ReservaPolicyTest extends TestCase
     {
         $user = new Utilizador();
         $user->id = 1;
-        $user->tipo_user = 'comum';
+        $user->tipo_user = 'estudante';
 
         $reserva = new Reserva();
         $reserva->utilizador_id = 1;
@@ -38,7 +38,7 @@ class ReservaPolicyTest extends TestCase
     {
         $user = Mockery::mock(Utilizador::class)->makePartial();
         $user->id = 2;
-        $user->tipo_user = 'comum';
+        $user->tipo_user = 'estudante';
 
         $reserva = new Reserva();
         $reserva->utilizador_id = 1;
@@ -50,7 +50,7 @@ class ReservaPolicyTest extends TestCase
     {
         $user = new Utilizador();
         $user->id = 1;
-        $user->tipo_user = 'comum';
+        $user->tipo_user = 'estudante';
 
         $reservaPendente = new Reserva(['estado' => EstadoReserva::Pendente]);
         $reservaPendente->utilizador_id = 1;

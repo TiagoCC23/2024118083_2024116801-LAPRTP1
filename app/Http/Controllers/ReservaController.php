@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Enums\EstadoReserva;
@@ -45,7 +46,7 @@ class ReservaController extends Controller
         ]);
 
         /* Atualiza o estado */
-        $reserva->update(['estado' => $validated['estado']]);
+        $reserva->update(['estado' => EstadoReserva::from($validated['estado']),]);
 
         /* Volta para onde o utilizador estava*/
         return back()->with('success', 'Estado da reserva atualizado!');
