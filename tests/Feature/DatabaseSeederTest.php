@@ -76,6 +76,9 @@ class DatabaseSeederTest extends TestCase
 
         // 7. Horários associados às reservas (r1 tem 2 horários, r2 tem 3 horários = 5 registros pivot)
         $this->assertDatabaseCount('reserva_horario', 5);
+
+        // 8. Salas administradas pelo admin no seu edifício
+        $this->assertDatabaseCount('administra', 2);
     }
 
     public function test_horario_seeder_gera_exatamente_blocos_de_uma_hora(): void

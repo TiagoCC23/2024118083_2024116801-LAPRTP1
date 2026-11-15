@@ -26,6 +26,7 @@ class MigrationsTest extends TestCase
             'jobs',
             'job_batches',
             'failed_jobs',
+            'sessions',
             'edificios',
             'utilizadores',
             'salas',
@@ -36,7 +37,6 @@ class MigrationsTest extends TestCase
             'administra',
             'ocupacoes',
         ];
-
         foreach ($tabelas as $tabela) {
             $this->assertTrue(Schema::hasTable($tabela), "A tabela '{$tabela}' não foi encontrada.");
         }
