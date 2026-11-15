@@ -1,5 +1,5 @@
 @php
-    $isRegisto = old('_form') === 'registo' || ($tab ?? 'login') === 'registo'; /* Verifica se a tab existe e o que é, para depois comparar com o registo*/
+    $isRegisto = old('_form') === 'registo' || ($tab ?? 'login') === 'registo';
     $fundo = 'images/fundo1.jpg';
 @endphp
 
@@ -115,7 +115,7 @@
         @endif
 
         <!-- Formulário 1: Login -->
-        <form id="form-register" action="{{ route('auth.signin') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
+        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start {{ $isRegisto ? 'd-none' : '' }}">
             @csrf
 
             <div class="mb-4">
@@ -149,7 +149,7 @@
         </form>
 
         <!-- Formulário 2: Registo -->
-        <form id="form-register" action="{{ route('register') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
+        <form id="form-register" action="{{ route('auth.signin') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
             @csrf
             <input type="hidden" name="_form" value="registo">
 

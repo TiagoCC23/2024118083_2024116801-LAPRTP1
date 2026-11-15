@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EstadoReserva;
 use App\Models\Avaliacao;
+use App\Models\Reserva;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -21,9 +23,9 @@ class AvaliacaoController extends Controller
     {
         $userId = Auth::id();
 
-        $avaliacoes = Avaliacao::whereHas('reserva', function ($query) use ($userId) {
-            $query->where('utilizador_id', $userId);
-        })->get();
+        $avaliacoes = Avaliacao::with(['reserva.sala.edificio', 'reserva.utilizador'])
+            ->whereHas('reserva', fn ($query) => $query->where('utilizador_id', $userId))
+            ->paginate(10);
 
         return view('avaliacoes.self', compact('avaliacoes'));
     }
@@ -34,8 +36,8 @@ class AvaliacaoController extends Controller
      */
     public function index()
     {
-        $avaliacao = Avaliacao::with('reserva')->get();
-        return view('avaliacoes.index', compact('avaliacao'));
+        $avaliacoes = Avaliacao::with(['reserva.sala.edificio', 'reserva.utilizador'])->paginate(10);
+        return view('avaliacoes.index', compact('avaliacoes'));
     }
 
     /**
@@ -44,7 +46,14 @@ class AvaliacaoController extends Controller
     public function create()
     {
         $avaliacao = new Avaliacao();
-        return view('avaliacoes.create', compact('avaliacao'));
+        $reservas = Reserva::with('sala.edificio')
+            ->where('utilizador_id', Auth::id())
+            ->where('estado', EstadoReserva::Confirmada)
+            ->whereDoesntHave('avaliacao')
+            ->orderByDesc('data')
+            ->get();
+
+        return view('avaliacoes.create', compact('avaliacao', 'reservas'));
     }
 
     /**
@@ -62,7 +71,8 @@ class AvaliacaoController extends Controller
      */
     public function show(Avaliacao $avaliacao)
     {
-        return view('avaliacoes.show', ['avaliacao'=>$avaliacao]);
+        $avaliacao->load(['reserva.sala.edificio', 'reserva.utilizador']);
+        return view('avaliacoes.show', compact('avaliacao'));
     }
 
     /**
@@ -70,7 +80,12 @@ class AvaliacaoController extends Controller
      */
     public function edit(Avaliacao $avaliacao)
     {
-        return view('avaliacoes.edit', compact('avaliacao'));
+        $avaliacao->load('reserva.sala.edificio');
+        $reservas = Reserva::with('sala.edificio')
+            ->where('id', $avaliacao->reserva_id)
+            ->get();
+
+        return view('avaliacoes.edit', compact('avaliacao', 'reservas'));
     }
 
     /**
