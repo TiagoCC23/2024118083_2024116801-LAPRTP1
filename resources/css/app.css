@@ -4,13 +4,304 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.font-display {
+    font-family: 'Syne', sans-serif;
+    letter-spacing: -0.04em;
+}
 
-    --color-ufp-cream: #f7f6e4;
-    --color-ufp-sand: #e2d5c1;
-    --color-ufp-gold: #d4c098;
-    --color-ufp-brown: #5f3711;
-    --color-ufp-dark: #3a220a;
+.font-body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    --bg-overlay: 0.75;
+    --bg-image: url('/public/images/fundo1.jpg');
+
+    background-image:
+        linear-gradient(rgba(0, 0, 0, var(--bg-overlay)), rgba(0, 0, 0, var(--bg-overlay))),
+        var(--bg-image);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: #ffffff;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Alteração apenas do caminho da imagem de acordo com a classe no body */
+body.bg-fundo-login     { --bg-image: url('/public/images/fundo1.jpg'); }
+body.bg-fundo-home      { --bg-image: url('/public/images/fundo3.jpg'); }
+body.bg-fundo-reservas  { --bg-image: url('/public/images/fundo4.webp'); }
+body.bg-fundo-salas     { --bg-image: url('/public/images/fundo2.jpg'); }
+body.bg-fundo-horarios  { --bg-image: url('/public/images/fundo3.jpg'); }
+
+.glass-header,
+.glass-footer {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.liquid-glass-card,
+.glass-schedule-card,
+.glass-card-campus {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.nav-glass-link {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.45rem 0.8rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nav-glass-link:hover,
+.nav-glass-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.glass-input,
+.glass-select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus,
+.glass-select:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.glass-select option {
+    background-color: #121214 !important;
+    color: #ffffff !important;
+}
+
+.minimal-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    padding: 0.6rem 0 !important;
+    box-shadow: none !important;
+}
+
+.minimal-input:focus {
+    background: transparent !important;
+    border-bottom: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.minimal-input::placeholder {
+    color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.btn-liquid {
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+    padding: 0.85rem 2rem;
+    border-radius: 50rem;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
+}
+
+.btn-liquid:hover {
+    background-color: #e2e8f0;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 255, 255, 0.25);
+}
+
+.btn-login-submit {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    font-size: 0.8rem !important;
+    padding: 0.75rem 2.8rem !important;
+    border-radius: 50rem !important;
+    border: none !important;
+    display: inline-block !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+}
+
+.btn-login-submit:hover {
+    background-color: #e2e8f0 !important;
+    color: #000000 !important;
+    transform: translateY(-1px);
+}
+
+.btn-minimal {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    font-size: 0.8rem !important;
+    padding: 0.75rem 2.5rem !important;
+    border-radius: 50rem !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-minimal:hover {
+    background-color: #e2e8f0 !important;
+    transform: translateY(-2px);
+}
+
+.btn-glass-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-glass-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.table-cronograma,
+.table-weekly {
+    color: rgba(255, 255, 255, 0.85) !important;
+    margin-bottom: 0;
+}
+
+.table-cronograma th,
+.table-weekly th {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    padding: 1rem 1.25rem !important;
+}
+
+.table-cronograma td,
+.table-weekly td {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 1rem 1.25rem !important;
+    font-size: 0.85rem;
+}
+
+.table-cronograma tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.badge-status {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-confirmada, .badge-livre {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.badge-pendente {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badge-cancelada, .badge-ocupado {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.calendar-box {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 1rem !important;
+    padding: 1rem !important;
+}
+
+.flatpickr-calendar {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.flatpickr-day.selected {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+.tab-btn {
+    background: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    padding-bottom: 0.25rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #ffffff !important;
+}
+
+.d-none {
+    display: none !important;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TipoUtilizador;
 use App\Models\Utilizador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,7 @@ class AuthController extends Controller{
             'nome' => $dados['nome'],
             'email' => $dados['email'],
             'password_hash' => Hash::make($dados['password']), /* faz o hash */
-            'tipo_user' => 'estudante',
+            'tipo_user' => TipoUtilizador::Estudante,
         ]);
         event(new Registered($utilizador));
         Auth::login($utilizador);
