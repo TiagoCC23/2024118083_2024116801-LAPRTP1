@@ -24,7 +24,7 @@ class ReservaController extends Controller
         $capacidadeMaxima = $sala ? $sala->capacidade_maxima : 1;
 
         return [
-            'data' => 'required|date',
+            'data' => 'required|date|after_or_equal:today',
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
             'tipo_de_uso' => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
             'sala_id' => 'required|integer|exists:salas,id',
@@ -82,7 +82,8 @@ class ReservaController extends Controller
         $edificios = Edificio::orderBy('nome')->get();
         $salas = Sala::with('edificio')->orderBy('nome_numero')->get();
         $horarios = Horario::orderBy('hora_inicio')->get();
-        $dataSelecionada = $request->query('data', date('Y-m-d'));
+        $dataParam = $request->query('data');
+        $dataSelecionada = ($dataParam && $dataParam >= date('Y-m-d')) ? $dataParam : date('Y-m-d');
 
         return view('reservas.create', compact('reserva', 'edificios', 'salas', 'horarios', 'dataSelecionada'));
     }

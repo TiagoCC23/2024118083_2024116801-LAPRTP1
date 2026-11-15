@@ -27,6 +27,7 @@
             min-height: 100vh;
         }
 
+        /* Corrige conflito do Tailwind v4 (.collapse { visibility: collapse }) com o Bootstrap 5 */
         .navbar-collapse,
         .navbar-collapse.collapse {
             visibility: visible !important;
@@ -84,7 +85,7 @@
 @hasSection('header')
     @yield('header')
 @else
-    <nav class="navbar navbar-expand-lg navbar-dark glass-header border-bottom px-3 px-md-5 py-3 position-relative z-3">
+    <nav class="navbar navbar-expand-lg navbar-dark glass-header border-bottom px-3 px-md-5 py-3 position-relative" style="z-index: 1050;">
         <div class="container-fluid px-0">
             <a href="{{ route('home') }}" class="navbar-brand text-white font-display fs-4 fw-bold tracking-tight mb-0">
                 UFP <span class="fw-normal text-white-50">SALAS</span>
@@ -159,17 +160,15 @@
                                         <i class="bi bi-star-half me-2"></i> Minhas Avaliações
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider border-white border-opacity-10"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i> Sair
-                                        </button>
-                                    </form>
-                                </li>
                             </ul>
                         </div>
+
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline m-0">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3 text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.08em;">
+                                Sair <i class="bi bi-box-arrow-right ms-1"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             @endauth
@@ -177,7 +176,7 @@
     </nav>
 @endif
 
-<main class="container my-auto py-4 position-relative z-3">
+<main class="container my-auto py-4 position-relative z-1">
     @if ($msg = session('ok') ?? session('success') ?? session('message'))
         <div class="alert alert-success bg-success bg-opacity-25 border-success text-white mb-4 mx-auto" style="max-width: 1100px;">
             {{ $msg }}
@@ -193,11 +192,13 @@
     @yield('conteudo')
 </main>
 
-<footer class="glass-footer border-top p-4 text-center text-white-50 text-uppercase position-relative z-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
+<footer class="glass-footer border-top p-4 text-center text-white-50 text-uppercase position-relative z-1" style="font-size: 0.65rem; letter-spacing: 0.15em;">
     © {{ date('Y') }} Universidade Fernando Pessoa · Gestão de Espaços
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 @stack('scripts')
 </body>
 </html>

@@ -7,6 +7,7 @@
     <div class="mb-3">
         <label for="data" class="form-label text-uppercase text-white-50 small">Data da Reserva *</label>
         <input type="date" id="data" name="data"
+               min="{{ date('Y-m-d') }}"
                value="{{ old('data', $reserva->data?->format('Y-m-d') ?? $dataSelecionada ?? date('Y-m-d')) }}"
                required class="form-control glass-input">
     </div>
