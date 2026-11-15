@@ -32,6 +32,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@ufp.test',
             'password_hash' => Hash::make('password123'),
             'tipo_user' => 'estudante',
+            'verificado_em' => now(),
         ]);
 
         $response = $this->post(action([\App\Http\Controllers\AuthController::class, 'login']), [
@@ -77,7 +78,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('reservas.index'));
+        $response->assertRedirect(route('verification.notice'));
     }
 
     public function test_logout_clears_session_and_redirects()

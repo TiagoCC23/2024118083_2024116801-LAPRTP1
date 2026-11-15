@@ -52,8 +52,8 @@ class SalaController extends Controller
      */
     public function index()
     {
-        $sala = Sala::with('edificio')->get();
-        return view('salas.index', compact('sala'));
+        $salas = Sala::with('edificio')->get();
+        return view('salas.index', compact('salas'));
     }
 
     /**
@@ -61,7 +61,8 @@ class SalaController extends Controller
      */
     public function create()
     {
-        return view('salas.create');
+        $sala = new Sala();
+        return view('salas.create', compact('sala'));
     }
 
     /**

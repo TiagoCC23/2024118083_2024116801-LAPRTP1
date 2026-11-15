@@ -12,6 +12,14 @@ class HorarioControllerTest extends TestCase
 
     public function test_index_displays_horarios()
     {
+        $user = \App\Models\Utilizador::create([
+            'nome' => 'Estudante Teste',
+            'email' => 'estudante@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'estudante',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($user);
         Horario::create(['hora_inicio' => '08:00:00', 'hora_fim' => '09:00:00']);
 
         $response = $this->get(route('horarios.index'));
@@ -22,6 +30,14 @@ class HorarioControllerTest extends TestCase
 
     public function test_store_creates_horario()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
         $response = $this->post(route('horarios.store'), [
             'hora_inicio' => '10:00',
             'hora_fim' => '11:00',
@@ -37,6 +53,14 @@ class HorarioControllerTest extends TestCase
 
     public function test_update_modifies_horario()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
         $horario = Horario::create(['hora_inicio' => '08:00:00', 'hora_fim' => '09:00:00']);
 
         $response = $this->put(route('horarios.update', $horario), [
@@ -55,6 +79,14 @@ class HorarioControllerTest extends TestCase
 
     public function test_destroy_deletes_horario()
     {
+        $admin = \App\Models\Utilizador::create([
+            'nome' => 'Admin Teste',
+            'email' => 'admin@ufp.edu.pt',
+            'password_hash' => bcrypt('password123'),
+            'tipo_user' => 'admin',
+            'verificado_em' => now()
+        ]);
+        $this->actingAs($admin);
         $horario = Horario::create(['hora_inicio' => '08:00:00', 'hora_fim' => '09:00:00']);
 
         $response = $this->delete(route('horarios.destroy', $horario));

@@ -36,8 +36,10 @@ class EdificioController extends Controller
      */
     public function create()
     {
-        return view('edificios.create');
+        $edificio = new Edificio();
+        return view('edificios.create', compact('edificio'));
     }
+
 
     /**
      * Store a newly created resource in storage.
