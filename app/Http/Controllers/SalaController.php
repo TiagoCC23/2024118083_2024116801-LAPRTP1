@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Disponibilidade;
-use App\Enums\TipoSala;
+use App\Models\Edificio;
 use App\Models\Sala;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,8 +18,8 @@ class SalaController extends Controller
     private function rules(?Sala $sala = null): array
     {
         return[
-            'nome_numero' => ['required', 'string', Rule::unique('salas')->ignore($sala)],
-            'capacidade_maxima' => 'required|integer|min:0',
+            'nome_numero' => ['required', 'string', 'max:50', Rule::unique('salas')->where(fn ($q) => $q->where('edificio_id', request('edificio_id')))->ignore($sala),],
+            'capacidade_maxima' => 'required|integer|min:1',
             'tipo_sala' =>'required|string|in:Exame,Trabalho,SalaDeAula,Outro',
             'disponibilidade' => ['required',Rule::enum(Disponibilidade::class)],
             'piso' => 'required|integer',
@@ -30,16 +30,22 @@ class SalaController extends Controller
 
     public function checkDisponibilidade(Request $request)
     {
-        $request->validate(['data' => 'required|date', 'capacidade_maxima' => 'required|integer|min:0',]);
-        $dataRequest = $request->input('data');
-        $capacidadeRequest = $request->input('capacidade_maxima');
+        $dataRequest = $request->input('data', date('Y-m-d'));
+        $capacidadeRequest = $request->input('capacidade_maxima', 1);
 
-        /* Muito AI gen, tenho de ver melhor ou tentar perceber esta querie*/
-        $salasDisponiveis = Sala::where('capacidade_maxima', '>=', $capacidadeRequest)
+        $request->merge([
+            'data' => $dataRequest,
+            'capacidade_maxima' => $capacidadeRequest,
+        ])->validate([
+            'data' => 'required|date',
+            'capacidade_maxima' => 'required|integer|min:0',
+        ]);
+
+        $salasDisponiveis = Sala::with('edificio')
+            ->where('capacidade_maxima', '>=', $capacidadeRequest)
             ->whereDoesntHave('reservas', function ($query) use ($dataRequest) {
-                /*Exclui as salas que tenham reservas para a dataRequest e que o estado não seja cancelada/rejeitada*/
                 $query->whereDate('data', $dataRequest)
-                    ->whereIn('estado', ['Pendente', 'Confirmada']);
+                    ->whereIn('estado', ['pendente', 'confirmada']);
             })
             ->get();
 
@@ -52,7 +58,7 @@ class SalaController extends Controller
      */
     public function index()
     {
-        $salas = Sala::with('edificio')->get();
+        $salas = Sala::with('edificio')->paginate(10);
         return view('salas.index', compact('salas'));
     }
 
@@ -62,7 +68,9 @@ class SalaController extends Controller
     public function create()
     {
         $sala = new Sala();
-        return view('salas.create', compact('sala'));
+        $edificios = Edificio::orderBy('nome')->get();
+        $disponibilidades = Disponibilidade::cases();
+        return view('salas.create', compact('sala', 'edificios', 'disponibilidades'));
     }
 
     /**
@@ -80,7 +88,8 @@ class SalaController extends Controller
      */
     public function show(Sala $sala)
     {
-        return view('salas.show', ['sala'=>$sala]);
+        $sala->load('edificio');
+        return view('salas.show', compact('sala'));
     }
 
     /**
@@ -88,7 +97,9 @@ class SalaController extends Controller
      */
     public function edit(Sala $sala)
     {
-        return view('salas.edit', compact('sala'));
+        $edificios = Edificio::orderBy('nome')->get();
+        $disponibilidades = Disponibilidade::cases();
+        return view('salas.edit', compact('sala', 'edificios', 'disponibilidades'));
     }
 
     /**
