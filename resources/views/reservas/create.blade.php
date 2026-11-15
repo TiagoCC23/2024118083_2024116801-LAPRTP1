@@ -18,112 +18,61 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        .font-display {
-            font-family: 'Syne', sans-serif;
-            letter-spacing: -0.04em;
-        }
-        .font-body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        @extends('layouts.app')
 
-        /* Fundo Geral da Página (Fundo escuro com a imagem comentada) */
-        body {
-            /*background: #09090b;*/
-            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-                        url("{{ asset('images/fundo4.webp') }}") center / cover no-repeat fixed;
-            color: #ffffff;
-        }
+@section('title', 'UFP - Nova Reserva')
 
-        /* Efeito Liquid Glass (Glassmorphism) */
-        .liquid-glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 1.5rem;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
+@section('conteudo')
+<div class="row g-4 align-items-start mx-auto" style="max-width: 1150px;">
 
-        /* Form Inputs e Selects em estilo Minimalista / Glass */
-        .glass-input, .glass-select {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: #ffffff !important;
-            border-radius: 0.75rem !important;
-            padding: 0.75rem 1rem !important;
-            transition: all 0.3s ease;
-        }
-        .glass-input:focus, .glass-select:focus {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border-color: #ffffff !important;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1) !important;
-            color: #ffffff !important;
-        }
-        .glass-select option {
-            background-color: #121214 !important;
-            color: #ffffff !important;
-        }
+        <!-- CARD DA DATA SELECIONADA -->
+        <div class="col-lg-4">
+        <div class="liquid-glass-card p-4 text-center">
+        <span class="text-uppercase text-white-50 small fw-bold mb-2 d-block" style="letter-spacing: 0.2em;">
+                                                                                                            Dia Selecionado
+        </span>
 
-        /* Botão de Submissão Liquid */
-        .btn-liquid {
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-size: 0.85rem;
-            padding: 0.85rem 2rem;
-            border-radius: 50rem;
-            border: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
-        }
-        .btn-liquid:hover {
-            background-color: #e2e8f0;
-            color: #000000;
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.25);
-        }
+        @php
+            $dataString = $dataSelecionada ?? request('data', date('Y-m-d'));
+            $carbonData = \Carbon\Carbon::parse($dataString)->locale('pt');
+        @endphp
 
-        /* Card da Data Selecionada (Esquerda) */
-        .date-display-box {
-            text-align: center;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .date-number {
-            font-size: 3.5rem;
-            line-height: 1;
-            font-weight: 800;
-            font-family: 'Syne', sans-serif;
-            color: #ffffff;
-        }
+<div class="font-display my-2" style="font-size: 3.5rem; font-weight: 800;">
+        {{ $carbonData->format('d') }}
+</div>
 
-        /* Texto digitado pelo utilizador */
-        .glass-input {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: #ffffff !important; /* ← Mude aqui a cor do texto digitado (ex: #ffffff, #38bdf8, etc.) */
-            border-radius: 0.75rem !important;
-            padding: 0.75rem 1rem !important;
-            transition: all 0.3s ease;
-        }
+        <div class="text-uppercase fw-bold text-white small" style="letter-spacing: 0.15em;">
+        {{ $carbonData->translatedFormat('F') }}
+</div>
 
-        /* Cor do texto de exemplo (Placeholder) */
-        .glass-input::placeholder {
-            color: rgba(255, 255, 255, 0.4) !important;
-        }
+        <div class="text-white-50 small">
+                                        {{ $carbonData->format('Y') }} · {{ ucfirst($carbonData->translatedFormat('l')) }}
+            </div>
 
-        /* Cor do texto quando o campo está em foco (selecionado) */
-        .glass-input:focus {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border-color: #ffffff !important;
-            color: #ffffff !important; /* ← Cor do texto em foco */
-        }
+        <div class="mt-4 pt-3 border-top border-white border-opacity-10 w-100">
+        <a href="{{ url('/home') }}" class="text-white-50 text-decoration-none small text-uppercase">
+        <i class="bi bi-arrow-left me-1"></i> Alterar Data
+        </a>
+        </div>
+        </div>
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <div class="col-lg-8">
+        <div class="liquid-glass-card p-4 p-md-5">
+        <h3 class="font-display text-uppercase text-white fw-bold mb-1">
+                                                                       Efetuar Reserva
+        </h3>
+        <p class="text-white-50 small mb-4">
+                                           Preencha os detalhes abaixo para concluir o seu agendamento.
+        </p>
+
+        @include('reservas._form')
+</div>
+        </div>
+
+        </div>
+        @endsection
     </style>
 </head>
 <body class="font-body min-vh-100 d-flex flex-column justify-content-between">
@@ -196,81 +145,7 @@
                     Preencha os detalhes abaixo para concluir o seu agendamento.
                 </p>
 
-                <!-- Formulário de Reserva Unificado -->
-                <form action="{{ route('reservas.store') }}" method="POST">
-                    @csrf
-
-                    <!-- Campo Oculto que envia a data para o banco de dados -->
-                    <input type="hidden" name="data" value="{{ $dataString }}">
-
-                    <!-- Edifício -->
-                    <div class="mb-3">
-                        <label for="edificio_id" class="form-label text-uppercase text-white-50 small" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                            Edifício *
-                        </label>
-                        <select id="edificio_id" name="edificio_id" required class="form-select glass-select">
-                            <option value="" disabled selected>Selecione o Edifício</option>
-                            @foreach($edificios ?? [] as $edificio)
-                                <option value="{{ $edificio->id }}">{{ $edificio->nome }} ({{ $edificio->sigla }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Sala -->
-                    <div class="mb-3">
-                        <label for="sala_id" class="form-label text-uppercase text-white-50 small" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                            Sala Disponível *
-                        </label>
-                        <input type="text" id="tipo_de_uso" name="tipo_de_uso" required
-                               placeholder="Ex: Sala 204" class="form-control glass-input">
-                    </div>
-
-                    <!-- Tipo de Uso e Quantidade de Pessoas -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label for="tipo_de_uso" class="form-label text-uppercase text-white-50 small" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                                Tipo de Uso *
-                            </label>
-                            <input type="text" id="tipo_de_uso" name="tipo_de_uso" required
-                                   placeholder="Ex: Estudo Individual, Reunião, etc." class="form-control glass-input">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="quantidade_pessoas" class="form-label text-uppercase text-white-50 small" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                                Nº Pessoas *
-                            </label>
-                            <input type="number" id="quantidade_pessoas" name="quantidade_pessoas" min="1" max="50" value="1" required class="form-control glass-input">
-                        </div>
-                    </div>
-
-                    <!-- Bloco de Horários -->
-                    <div class="mb-4">
-                        <label class="form-label text-uppercase text-white-50 small d-block mb-2" style="font-size: 0.7rem; letter-spacing: 0.1em;">
-                            Horários Pretendidos *
-                        </label>
-                        <div class="d-flex flex-wrap gap-2">
-                            @forelse($horarios ?? [] as $horario)
-                                @php
-                                    // Corta os segundos (ex: "08:00:00" passa a "08:00")
-                                    $inicio = substr($horario->hora_inicio, 0, 5);
-                                    $fim = substr($horario->hora_fim, 0, 5);
-                                @endphp
-                                <input type="checkbox" class="btn-check" name="horarios[]" id="h-{{ $horario->id }}" value="{{ $horario->id }}" autocomplete="off">
-                                <label class="btn btn-outline-light rounded-pill px-3 py-2" style="font-size: 0.8rem;" for="h-{{ $horario->id }}">
-                                    {{ $inicio }} - {{ $fim }}
-                                </label>
-                            @empty
-                                <span class="text-white-50 small">Carregando horários disponíveis...</span>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <!-- Botão de Confirmação -->
-                    <div class="pt-2 text-end">
-                        <button type="submit" class="btn btn-liquid w-100 w-md-auto">
-                            <i class="bi bi-check2-circle me-1"></i> Confirmar Reserva
-                        </button>
-                    </div>
-                </form>
+                @include('reservas._form')
             </div>
         </div>
     </div>
