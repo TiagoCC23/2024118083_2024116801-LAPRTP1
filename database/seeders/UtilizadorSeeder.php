@@ -12,26 +12,26 @@ class UtilizadorSeeder extends Seeder
     public function run(): void
     {
         Utilizador::create([
-            'nome' => 'Admin Biblioteca',
-            'email' => 'admin@ufp.test',
-            'password_hash' => 'admin',
+            'nome' => env('SEED_ADMIN_NOME', 'Admin UFP'),
+            'email' => env('SEED_ADMIN_EMAIL', 'admin@ufp.test'),
+            'password_hash' => env('SEED_ADMIN_PASSWORD', 'admin'),
             'tipo_user' => TipoUtilizador::Admin, // Enum
             'edificio_id' => Edificio::where('sigla', 'UFP')->value('id'),
             'verificado_em' => now(),
         ]);
 
         Utilizador::create([
-            'nome' => 'Estudante 1',
-            'email' => 'estudante1@ufp.test',
-            'password_hash' => 'estudante1',
+            'nome' => env('SEED_ESTUDANTE1_NOME', 'Estudante 1'),
+            'email' => env('SEED_ESTUDANTE1_EMAIL', 'estudante1@ufp.test'),
+            'password_hash' => env('SEED_ESTUDANTE1_PASSWORD', 'estudante1'),
             'tipo_user' => TipoUtilizador::Estudante, // Enum
             'verificado_em' => now(),
         ]);
 
         Utilizador::create([
-            'nome' => 'Utilizador 2',
-            'email' => 'estudante2@ufp.test',
-            'password_hash' => 'estudante2',
+            'nome' => env('SEED_ESTUDANTE2_NOME', 'Estudante 2'),
+            'email' => env('SEED_ESTUDANTE2_EMAIL', 'estudante2@ufp.test'),
+            'password_hash' => env('SEED_ESTUDANTE2_PASSWORD', 'estudante2'),
             'tipo_user' => TipoUtilizador::Estudante, // Enum
             'verificado_em' => now(),
         ]);
