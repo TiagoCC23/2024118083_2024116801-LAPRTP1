@@ -1,3 +1,6 @@
+@php
+    $isRegisto = old('_form') === 'registo' || ($tab ?? 'login') === 'registo'; /* Verifica se a tab existe e o que é, para depois comparar com o registo*/
+@endphp
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -96,11 +99,11 @@
 
     <!-- Botões para alternar Login / Registar -->
     <div class="d-flex align-items-center gap-3">
-        <button type="button" onclick="switchTab('login')" id="btn-tab-login" class="tab-btn active">
+        <button type="button" onclick="switchTab('login')" id="btn-tab-login" class="tab-btn {{ $isRegisto === 'login' ? 'active' : '' }}">
             Entrar
         </button>
         <span class="text-white-50">|</span>
-        <button type="button" onclick="switchTab('register')" id="btn-tab-register" class="tab-btn">
+        <button type="button" onclick="switchTab('register')" id="btn-tab-register" class="tab-btn {{ $isRegisto === 'registo' ? 'active' : '' }}">
             Registar
         </button>
     </div>
@@ -138,7 +141,7 @@
         @endif
 
         <!-- ================= FORMULÁRIO 1: LOGIN ================= -->
-        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start">
+        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start {{ $isRegisto ? 'd-none' : '' }}">
             @csrf
 
             <!-- Campo Email -->
@@ -175,8 +178,9 @@
         </form>
 
         <!-- ================= FORMULÁRIO 2: REGISTO ================= -->
-        <form id="form-register" action="{{ route('register') }}" method="POST" class="text-start d-none">
+        <form id="form-register" action="{{ route('register') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
             @csrf
+            <input type="hidden" name="_form" value="registo">
 
             <!-- Campo Nome -->
             <div class="mb-4">
@@ -260,6 +264,19 @@
             btnRegister.classList.add('active');
             btnLogin.classList.remove('active');
         }
+    }
+</script>
+<script>
+    function switchTab(tab) {
+        const isRegisto = tab === 'register' || tab === 'registo'; /* Converte a string para um bool (true = registo | false = login) */
+
+        document.getElementById('form-login').classList.toggle('d-none', isRegisto); /* Se for registo/true, adiciona a classe, login/falso remove*/
+        document.getElementById('form-register').classList.toggle('d-none', !isRegisto);
+
+        document.getElementById('btn-tab-login').classList.toggle('active', !isRegisto);
+        document.getElementById('btn-tab-register').classList.toggle('active', isRegisto);
+
+        window.history.replaceState(null, '', isRegisto ? '/registo' : '/login'); /* Atualiza o URL sem fazer um novo pedido HTTP*/
     }
 </script>
 </body>

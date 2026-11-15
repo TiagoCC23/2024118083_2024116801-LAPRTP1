@@ -12,11 +12,11 @@ use Illuminate\Auth\Events\Registered;
 class AuthController extends Controller{
 
     public function showLogin(){
-        return view('auth.login');
+        return view('auth', ['tab' => 'login']);
     }
     public function showRegisto()
     {
-        return view('auth.registo');
+        return view('auth', ['tab' => 'registo']);
     }
 
     public function login(Request $request)
