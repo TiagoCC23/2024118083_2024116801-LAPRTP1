@@ -10,11 +10,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
-// Rota raiz: se já estiver autenticado, vai para /home; senão mostra login/registo
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('home')
-        : view('auth.auth', ['tab' => 'login']);
+    return view('auth.auth');
 });
 
 // 2. Rotas de Autenticação
@@ -58,9 +55,12 @@ Route::middleware(['auth', 'email.verificado', 'admin'])->group(function (){
 
 // 3. Resources - Users
 
-Route::middleware(['auth', 'email.verificado'])->group(function (){
-    // 4. Rotas personalizadas (devem vir antes dos resources com parâmetros curinga)
-    Route::post('/salas/disponibilidade', [SalaController::class, 'checkDisponibilidade'])->name('salas.disponibilidade');
+Route::middleware(['auth', 'email.verificado'])->group(function () {
+    Route::get('/home', function () {
+        return view('home');
+    })->name('home');
+
+    Route::match(['get', 'post'], '/salas/disponibilidade', [SalaController::class, 'checkDisponibilidade'])->name('salas.disponibilidade');
     Route::get('/minhas-reservas', [ReservaController::class, 'minhasReservas'])->name('reservas.minhas');
     Route::patch('/reservas/{reserva}/estado', [ReservaController::class, 'alterarEstado'])->name('reservas.alterarEstado');
     Route::get('/minhas-avaliacoes', [AvaliacaoController::class, 'minhasAvaliacoes'])->name('avaliacoes.minhas');

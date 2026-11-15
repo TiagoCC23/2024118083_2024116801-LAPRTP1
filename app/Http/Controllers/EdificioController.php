@@ -27,7 +27,7 @@ class EdificioController extends Controller
      */
     public function index()
     {
-        $edificios = Edificio::with('salas')->get();
+        $edificios = Edificio::withCount('salas')->paginate(5);
         return view('edificios.index', compact('edificios'));
     }
 
@@ -56,7 +56,8 @@ class EdificioController extends Controller
      */
     public function show(Edificio $edificio)
     {
-        return view('edificios.show', ['edificio' => $edificio]);
+        $edificio->load('salas');
+        return view('edificios.show', compact('edificio'));
     }
 
     /**

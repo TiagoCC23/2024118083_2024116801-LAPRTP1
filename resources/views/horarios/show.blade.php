@@ -1,13 +1,19 @@
 @extends('layouts.app')
-@section('content')
-<h1>Detalhes do Horário: {{$horario->id}}</h1>;
 
-<div>
-    <p>ID: {{$horario->id}}</p>
-    <p>Hora Início: {{$horario->hora_inicio}}</p>
-    <p>Hora Fim: {{$horario->hora_fim}}</p>
+@section('title', 'UFP - Horário')
+@section('fundo', asset('images/fundo3.jpg'))
 
-    <a href="{{route('horarios.index')}}">Voltar à lista</a>
-    <a href="{{route('horarios.edit', $horario->id)}}">Editar este horário</a>
-</div>
+@section('conteudo')
+    <div class="liquid-glass-card p-4 p-md-5 mx-auto" style="max-width: 600px;">
+        <h2 class="font-display text-uppercase text-white fw-bold mb-3">Detalhes do Horário #{{ $horario->id }}</h2>
+        <p class="text-white-50 mb-1">Hora Início: <strong class="text-white">{{ substr($horario->hora_inicio, 0, 5) }}</strong></p>
+        <p class="text-white-50 mb-4">Hora Fim: <strong class="text-white">{{ substr($horario->hora_fim, 0, 5) }}</strong></p>
+
+        <div class="d-flex gap-2">
+            <a href="{{ route('horarios.index') }}" class="btn btn-glass-secondary">Voltar</a>
+            @if(auth()->user()?->isAdmin())
+                <a href="{{ route('horarios.edit', $horario) }}" class="btn btn-minimal">Editar</a>
+            @endif
+        </div>
+    </div>
 @endsection

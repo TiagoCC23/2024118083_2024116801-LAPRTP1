@@ -11,7 +11,7 @@ class Sala extends Model
 {
     protected $table = 'salas';
     public $timestamps = false; // -> não mexe nas datas
-    protected $fillable = ['nome_numero', 'capacidade_maxima', 'tipo_sala', 'piso', 'edificio_id'];
+    protected $fillable = ['nome_numero', 'capacidade_maxima', 'tipo_sala', 'disponibilidade', 'piso', 'edificio_id'];
 
     public function edificio(): BelongsTo
     {

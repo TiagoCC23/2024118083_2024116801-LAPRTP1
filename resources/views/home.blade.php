@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'UFP - Home')
+@section('fundo', asset('images/fundo3.jpg'))
 
 @section('conteudo')
     <div class="glass-card-campus p-4 p-md-5 mx-auto" style="max-width: 960px;">
@@ -30,9 +31,9 @@
             </div>
 
             <div class="col-lg-6 text-center text-lg-start ps-lg-4">
-            <span class="badge bg-white bg-opacity-10 text-white border border-white-20 rounded-pill px-3 py-1 text-uppercase mb-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
-                Universidade Fernando Pessoa
-            </span>
+                <span class="badge bg-white bg-opacity-10 text-white border border-white-20 rounded-pill px-3 py-1 text-uppercase mb-3" style="font-size: 0.65rem; letter-spacing: 0.15em;">
+                    Universidade Fernando Pessoa
+                </span>
 
                 <h2 class="font-display display-5 fw-bold text-uppercase text-white lh-1 mb-3">
                     Espaços de Estudo
@@ -43,7 +44,7 @@
                 </p>
 
                 <form action="{{ route('reservas.create') }}" method="GET">
-                    <input type="hidden" name="data" id="input-data-selecionada">
+                    <input type="hidden" name="data" id="input-data-selecionada" value="{{ date('Y-m-d') }}">
                     <button type="submit" class="btn btn-liquid w-100">
                         <i class="bi bi-plus-lg me-2"></i> Fazer minha reserva
                     </button>

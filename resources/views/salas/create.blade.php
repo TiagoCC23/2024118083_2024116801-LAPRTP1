@@ -1,24 +1,23 @@
 @extends('layouts.app')
 
-@section('content')
+@section('title', 'UFP - Nova Sala')
+@section('fundo', asset('images/fundo2.jpg'))
 
-    <h1>Adicionar Novo Salas</h1>
+@section('conteudo')
+    <div class="liquid-glass-card p-4 p-md-5 mx-auto" style="max-width: 750px;">
+        <h2 class="font-display text-uppercase text-white fw-bold mb-4">Adicionar Nova Sala</h2>
 
-@if ($errors->any())
-    <div>
-        <strong>Atenção - O formulário contem erros:</strong>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        @if ($errors->any())
+            <div class="alert alert-danger bg-danger bg-opacity-25 border-danger text-white small mb-4">
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('salas.store') }}" method="POST">
+            @csrf
+            @include('salas._form')
+        </form>
     </div>
-@endif
-
-<form action="{{ route('salas.store') }}" method="POST">
-    @csrf                               <!--Impede ataques crossfire -->
-@include('salas._form')
-</form>
-<br>
-<a href="{{ route('edificios.index') }}">Cancelar e Voltar à Lista</a>
 @endsection

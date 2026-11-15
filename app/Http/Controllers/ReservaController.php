@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Edificio;
+use App\Models\Horario;
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Enums\EstadoReserva;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class ReservaController extends Controller
@@ -18,18 +21,16 @@ class ReservaController extends Controller
         $sala = Sala::find(request('sala_id'));
 
         /* Se a sala existir, usa a capacidade dela. Caso contrário, assume 0.*/
-        $capacidadeMaxima = $sala ? $sala->capacidade_maxima : 0;
+        $capacidadeMaxima = $sala ? $sala->capacidade_maxima : 1;
 
         return [
-            'data'               => 'required|date',
-
+            'data' => 'required|date',
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
-            'estado'             => ['required', Rule::enum(EstadoReserva::class)],
-            'criado_em'          => 'required|date_format:Y-m-d H:i:s',
-            'eliminado_em'          => 'nullable|date_format:Y-m-d H:i:s, after:criado_em',
-            'tipo_de_uso'        => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
-            'sala_id'            => 'required|integer|exists:salas,id',
-            'utilizador_id'      => ['required', 'integer', 'exists:utilizadores,id'],
+            'tipo_de_uso' => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
+            'sala_id' => 'required|integer|exists:salas,id',
+            'horarios' => 'required|array|min:1',
+            'horarios.*' => 'integer|exists:horarios,id',
+            'estado' => ['sometimes', Rule::enum(EstadoReserva::class)],
         ];
     }
     public function minhasReservas()
@@ -55,19 +56,35 @@ class ReservaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reservas = Reserva::with(['utilizador', 'sala.edificio', 'horarios'])->get();
+        $query = Reserva::with(['utilizador', 'sala.edificio', 'horarios', 'avaliacao'])
+            ->when(!Auth::user()->isAdmin(), fn ($q) => $q->where('utilizador_id', Auth::id()))
+            ->when($request->filled('q'), function ($q) use ($request) {
+                $termo = '%' . $request->input('q') . '%';
+                $q->where(function ($sub) use ($termo) {
+                    $sub->where('tipo_de_uso', 'like', $termo)
+                        ->orWhereHas('sala', fn ($s) => $s->where('nome_numero', 'like', $termo));
+                });
+            })
+            ->orderByDesc('data');
+
+        $reservas = $query->paginate(10)->withQueryString();
         return view('reservas.index', compact('reservas'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $reserva = new Reserva();
-        return view('reservas.create', compact('reserva'));
+        $edificios = Edificio::orderBy('nome')->get();
+        $salas = Sala::with('edificio')->orderBy('nome_numero')->get();
+        $horarios = Horario::orderBy('hora_inicio')->get();
+        $dataSelecionada = $request->query('data', date('Y-m-d'));
+
+        return view('reservas.create', compact('reserva', 'edificios', 'salas', 'horarios', 'dataSelecionada'));
     }
 
     /**
@@ -76,8 +93,19 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate($this->rules());
-        Reserva::create($validatedData);
-        return redirect()->route('reservas.index')->with('success', 'Reserva criado com sucesso');
+
+        $reserva = Reserva::create([
+            'data' => $validatedData['data'],
+            'quantidade_pessoas' => $validatedData['quantidade_pessoas'],
+            'tipo_de_uso' => $validatedData['tipo_de_uso'],
+            'sala_id'  => $validatedData['sala_id'],
+            'utilizador_id'  => Auth::id(),
+            'estado' => EstadoReserva::Pendente,
+        ]);
+
+        $reserva->horarios()->sync($validatedData['horarios']);
+
+        return redirect()->route('reservas.index')->with('ok', 'Reserva criada com sucesso!');
     }
 
     /**
@@ -85,7 +113,9 @@ class ReservaController extends Controller
      */
     public function show(Reserva $reserva)
     {
-        return view('reservas.show', ['reserva'=>$reserva]);
+        Gate::authorize('view', $reserva);
+        $reserva->load(['sala.edificio', 'utilizador', 'horarios', 'avaliacao']);
+        return view('reservas.show', compact('reserva'));
     }
 
     /**
@@ -93,7 +123,13 @@ class ReservaController extends Controller
      */
     public function edit(Reserva $reserva)
     {
-        return view('reservas.edit', compact('reserva'));
+        Gate::authorize('update', $reserva);
+        $reserva->load(['horarios', 'sala']);
+        $edificios = Edificio::orderBy('nome')->get();
+        $salas = Sala::with('edificio')->orderBy('nome_numero')->get();
+        $horarios = Horario::orderBy('hora_inicio')->get();
+
+        return view('reservas.edit', compact('reserva', 'edificios', 'salas', 'horarios'));
     }
 
     /**
@@ -101,9 +137,24 @@ class ReservaController extends Controller
      */
     public function update(Request $request, Reserva $reserva)
     {
-            $validateData = $request->validate($this->rules($reserva));
-            $reserva->update($validateData);
-            return redirect()->route('reservas.index')->with('success', 'Atualizado com Sucesso');
+        Gate::authorize('update', $reserva);
+        $validatedData = $request->validate($this->rules($reserva));
+
+        $dados = [
+            'data'               => $validatedData['data'],
+            'quantidade_pessoas' => $validatedData['quantidade_pessoas'],
+            'tipo_de_uso'        => $validatedData['tipo_de_uso'],
+            'sala_id'            => $validatedData['sala_id'],
+        ];
+
+        if (Auth::user()->isAdmin() && isset($validatedData['estado'])) {
+            $dados['estado'] = $validatedData['estado'];
+        }
+
+        $reserva->update($dados);
+        $reserva->horarios()->sync($validatedData['horarios']);
+
+        return redirect()->route('reservas.index')->with('ok', 'Reserva atualizada com sucesso!');
     }
 
     /**
@@ -111,7 +162,8 @@ class ReservaController extends Controller
      */
     public function destroy(Reserva $reserva)
     {
+        Gate::authorize('delete', $reserva);
         $reserva->delete();
-        return redirect()->route('reservas.index')->with('success', 'Registo apagado com sucesso');
+        return redirect()->route('reservas.index')->with('ok', 'Reserva eliminada com sucesso!');
     }
 }
