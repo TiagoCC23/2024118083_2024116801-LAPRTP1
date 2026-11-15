@@ -115,7 +115,7 @@
         @endif
 
         <!-- Formulário 1: Login -->
-        <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start {{ $isRegisto ? 'd-none' : '' }}">
+        <form id="form-register" action="{{ route('auth.signin') }}" method="POST" class="text-start {{ !$isRegisto ? 'd-none' : '' }}">
             @csrf
 
             <div class="mb-4">
@@ -174,7 +174,7 @@
                     CRIAR PALAVRA-PASSE *
                 </label>
                 <input type="password" id="reg-password" name="password" required
-                       placeholder="Mínimo 6 caracteres" class="form-control minimal-input">
+                       placeholder="Mínimo 8 caracteres" class="form-control minimal-input">
             </div>
 
             <div class="mb-5">

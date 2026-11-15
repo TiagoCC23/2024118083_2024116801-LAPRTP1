@@ -34,7 +34,8 @@ class ReservaController extends Controller
     }
     public function minhasReservas()
     {
-        $reservas = Reserva::where('utilizador_id', Auth::id())->get();
+        $reservas = Reserva::with(['utilizador', 'sala.edificio', 'horarios'])
+            ->where('utilizador_id', Auth::id())->get();
         return view('reservas.index', compact('reservas'));
     }
 
@@ -56,7 +57,7 @@ class ReservaController extends Controller
      */
     public function index()
     {
-        $reservas = Reserva::with('utilizador', 'sala')->get();
+        $reservas = Reserva::with(['utilizador', 'sala.edificio', 'horarios'])->get();
         return view('reservas.index', compact('reservas'));
     }
 

@@ -10,29 +10,25 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
-// 1. Rota raiz que responde com status 200 (necessária para o ExampleTest)
+// Rota raiz: se já estiver autenticado, vai para /home; senão mostra login/registo
 Route::get('/', function () {
-    return view('auth');
-});
-Route::get('/home', function () {
-    return view('home');
+    return auth()->check()
+        ? redirect()->route('home')
+        : view('auth.auth', ['tab' => 'login']);
 });
 
 // 2. Rotas de Autenticação
-Route::middleware(['guest'])->group(function (){
+Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
     Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+});
+
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
 });
-
-Route::middleware(['auth'])->group(function (){
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
-});
-
 
 /* Momento da verificaçao do email*/
 Route::get('/email/verify', function () {
