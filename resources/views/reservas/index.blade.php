@@ -62,11 +62,9 @@
                                 <i class="bi bi-people me-1"></i> {{ $reserva->quantidade_pessoas }}
                             </td>
                             <td class="text-center">
-                                {{-- Uso do Componente Reutilizável Blade (Aula 06) --}}
                                 <x-badge-status :estado="$reserva->estado" />
                             </td>
                             <td class="text-end">
-                                {{-- Autorização na Vista com @can (Aula 08, slide 10) --}}
                                 @can('update', $reserva)
                                     <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2">
                                         <i class="bi bi-pencil"></i>

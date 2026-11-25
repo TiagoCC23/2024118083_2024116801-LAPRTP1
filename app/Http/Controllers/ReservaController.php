@@ -24,11 +24,38 @@ class ReservaController extends Controller
         $capacidadeMaxima = $sala ? $sala->capacidade_maxima : 1;
 
         return [
-            'data' => 'required|date|after_or_equal:today',
+            'data' => ['required', 'date', 'after_or_equal:today',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    try {
+                        if (\Carbon\Carbon::parse($value)->isSunday()) {
+                            $fail('Não é permitido efetuar reservas ao Domingo.');
+                        }
+                    } catch (\Throwable) {
+                        // O validador 'date' já trata datas inválidas
+                    }
+                },
+            ],
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
             'tipo_de_uso' => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
             'sala_id' => 'required|integer|exists:salas,id',
-            'horarios' => 'required|array|min:1',
+            'horarios' => ['required', 'array', 'min:1', 'max:3',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (!is_array($value) || count($value) <= 1) {
+                        return;
+                    }
+
+                    $blocos = Horario::whereIn('id', $value)
+                        ->orderBy('hora_inicio')
+                        ->get(['id', 'hora_inicio', 'hora_fim']);
+
+                    for ($i = 0; $i < $blocos->count() - 1; $i++) {
+                        if ($blocos[$i]->hora_fim !== $blocos[$i + 1]->hora_inicio) {
+                            $fail('Os horários selecionados têm de ser consecutivos (ex: um bloco e o bloco imediatamente seguinte).');
+                            return;
+                        }
+                    }
+                },
+            ],
             'horarios.*' => 'integer|exists:horarios,id',
             'estado' => ['sometimes', Rule::enum(EstadoReserva::class)],
         ];
