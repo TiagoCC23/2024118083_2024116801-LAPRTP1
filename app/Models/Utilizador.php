@@ -17,7 +17,7 @@ class Utilizador extends Authenticatable implements MustVerifyEmail
     use SoftDeletes, Atualizacoes, Notifiable;
 
     protected $table = 'utilizadores';
-    protected $fillable = ['nome', 'email', 'verificado_em', 'password_hash', 'tipo_user', 'edificio_id'];
+    protected $fillable = ['nome', 'email', 'google_id' ,  'verificado_em', 'password_hash', 'tipo_user', 'edificio_id'];
     protected $hidden = ['password_hash'];
 
     protected function casts(): array

@@ -18,8 +18,16 @@ Route::get('/', function () {
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
-    Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+
+
+    /* Google oAuth */
+    Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+    Route::middleware('google.auth')->group(function (){
+        Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
+        Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 100);
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
             $table->timestamp('verificado_em')->nullable();
-            $table->string('password_hash');
+            $table->string('password_hash')->nullable();
             $table->enum('tipo_user', ['estudante', 'admin'])->default('estudante');
             $table->foreignId('edificio_id')->nullable()->constrained('edificios')->nullOnDelete();
             $table->timestamp('criado_em')->useCurrent();
