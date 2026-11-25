@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['email.verificado' => \App\Http\Middleware\CheckEmailVerificado::class,
-                            'admin' => \App\Http\Middleware\CheckAdmin::class]);
+                            'admin' => \App\Http\Middleware\CheckAdmin::class,
+                            'google.auth'=> \App\Http\Middleware\GoogleAuth::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

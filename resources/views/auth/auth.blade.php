@@ -81,10 +81,12 @@
             <button type="button" id="btn-tab-login" class="tab-btn {{ !$isRegisto ? 'active' : '' }}">
                 ENTRAR
             </button>
-            <span class="text-white-50">|</span>
-            <button type="button" id="btn-tab-register" class="tab-btn {{ $isRegisto ? 'active' : '' }}">
-                REGISTAR
-            </button>
+            @if (session()->has('google_registo'))
+                <span class="text-white-50">|</span>
+                <button type="button" id="btn-tab-register" class="tab-btn {{ $isRegisto ? 'active' : '' }}">
+                    CONCLUIR REGISTO
+                </button>
+            @endif
         </div>
     </header>
 @endsection
@@ -118,12 +120,29 @@
         <form id="form-login" action="{{ route('login') }}" method="POST" class="text-start {{ $isRegisto ? 'd-none' : '' }}">
             @csrf
 
+            <div class="mb-4 text-center">
+                <a href="{{ route('auth.google') }}"
+                   class="btn btn-outline-light w-100 rounded-pill py-2 fw-semibold text-uppercase d-flex align-items-center justify-content-center gap-2"
+                   style="letter-spacing: 0.08em; font-size: 0.8rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M21.35 11.1H12v2.98h5.35c-.23 1.48-1.72 4.34-5.35 4.34-3.22 0-5.85-2.67-5.85-5.95s2.63-5.95 5.85-5.95c1.83 0 3.06.78 3.76 1.45l2.56-2.47C16.68 3.96 14.55 3 12 3 7.03 3 3 7.03 3 12s4.03 9 9 9c5.19 0 8.64-3.65 8.64-8.79 0-.59-.06-1.04-.14-1.11z"/>
+                    </svg>
+                    Continuar com o Google
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 my-4 text-white-50 small">
+                <hr class="flex-grow-1 border-white-50">
+                <span class="text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.15em;">ou com email</span>
+                <hr class="flex-grow-1 border-white-50">
+            </div>
+
             <div class="mb-4">
                 <label for="login-email" class="form-label text-uppercase text-white-50 small mb-1" style="letter-spacing: 0.1em; font-size: 0.75rem;">
-                    EMAIL INSTITUCIONAL *
+                    EMAIL *
                 </label>
-                <input type="email" id="login-email" name="email" value="{{ old('email') }}" required autofocus
-                       placeholder="aluno@ufp.edu.pt" class="form-control minimal-input">
+                <input type="email" id="login-email" name="email" value="{{ old('email') }}" required
+                       placeholder="exemplo@ufp.edu.pt" class="form-control minimal-input">
             </div>
 
             <div class="mb-5">
@@ -157,24 +176,25 @@
                 <label for="reg-nome" class="form-label text-uppercase text-white-50 small mb-1" style="letter-spacing: 0.1em; font-size: 0.75rem;">
                     NOME COMPLETO *
                 </label>
-                <input type="text" id="reg-nome" name="nome" value="{{ old('nome') }}" required
+                <input type="text" id="reg-nome" name="nome"
+                       value="{{ old('nome', session('google_registo.nome')) }}" required
                        placeholder="Nome" class="form-control minimal-input">
             </div>
 
             <div class="mb-4">
                 <label for="reg-email" class="form-label text-uppercase text-white-50 small mb-1" style="letter-spacing: 0.1em; font-size: 0.75rem;">
-                    EMAIL *
+                    EMAIL INSTITUCIONAL (GOOGLE)
                 </label>
-                <input type="email" id="reg-email" name="email" value="{{ old('email') }}" required
-                       placeholder="aluno@ufp.edu.pt" class="form-control minimal-input">
+                <input type="email" id="reg-email" value="{{ session('google_registo.email') }}"
+                       readonly class="form-control minimal-input opacity-75">
             </div>
 
             <div class="mb-4">
                 <label for="reg-password" class="form-label text-uppercase text-white-50 small mb-1" style="letter-spacing: 0.1em; font-size: 0.75rem;">
-                    CRIAR PALAVRA-PASSE *
+                    PALAVRA-PASSE (MÍN. 8 CARACTERES) *
                 </label>
                 <input type="password" id="reg-password" name="password" required
-                       placeholder="Mínimo 8 caracteres" class="form-control minimal-input">
+                       placeholder="••••••••" class="form-control minimal-input">
             </div>
 
             <div class="mb-5">
@@ -182,7 +202,7 @@
                     CONFIRMAR PALAVRA-PASSE *
                 </label>
                 <input type="password" id="reg-password-confirm" name="password_confirmation" required
-                       placeholder="Repita a palavra-passe" class="form-control minimal-input">
+                       placeholder="••••••••" class="form-control minimal-input">
             </div>
 
             <div class="pt-2 d-flex justify-content-end">
