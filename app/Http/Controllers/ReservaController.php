@@ -36,22 +36,40 @@ class ReservaController extends Controller
                 },
             ],
             'quantidade_pessoas' => 'required|integer|min:1|max:' . $capacidadeMaxima,
-            'tipo_de_uso' => 'required|string|in:SalaDeEstudo,Laboratorio,Leitura,Outro',
+            'tipo_de_uso' => 'required|string|in:AulaPratica,AulaTeorica,Estudo,Defesa,Palestra,Leitura,Outro,SalaDeEstudo,Laboratorio',
             'sala_id' => 'required|integer|exists:salas,id',
             'horarios' => ['required', 'array', 'min:1', 'max:3',
-                function (string $attribute, mixed $value, \Closure $fail) {
-                    if (!is_array($value) || count($value) <= 1) {
+                function (string $attribute, mixed $value, \Closure $fail) use ($reserva) {
+                    if (!is_array($value) || empty($value)) {
                         return;
                     }
 
-                    $blocos = Horario::whereIn('id', $value)
-                        ->orderBy('hora_inicio')
-                        ->get(['id', 'hora_inicio', 'hora_fim']);
+                    if (count($value) > 1) {
+                        $blocos = Horario::whereIn('id', $value)
+                            ->orderBy('hora_inicio')
+                            ->get(['id', 'hora_inicio', 'hora_fim']);
 
-                    for ($i = 0; $i < $blocos->count() - 1; $i++) {
-                        if ($blocos[$i]->hora_fim !== $blocos[$i + 1]->hora_inicio) {
-                            $fail('Os horários selecionados têm de ser consecutivos (ex: um bloco e o bloco imediatamente seguinte).');
-                            return;
+                        for ($i = 0; $i < $blocos->count() - 1; $i++) {
+                            if ($blocos[$i]->hora_fim !== $blocos[$i + 1]->hora_inicio) {
+                                $fail('Os horários selecionados têm de ser consecutivos (máximo 3 blocos seguidos).');
+                                return;
+                            }
+                        }
+                    }
+
+                    $salaId = request('sala_id');
+                    $data = request('data');
+
+                    if ($salaId && $data) {
+                        $conflito = Reserva::where('sala_id', $salaId)
+                            ->whereDate('data', $data)
+                            ->whereIn('estado', [EstadoReserva::Pendente, EstadoReserva::Confirmada])
+                            ->when($reserva?->exists, fn ($q) => $q->where('id', '!=', $reserva->id))
+                            ->whereHas('horarios', fn ($q) => $q->whereIn('horarios.id', $value))
+                            ->exists();
+
+                        if ($conflito) {
+                            $fail('Um ou mais horários selecionados já estão ocupados ou com reserva pendente para esta sala neste dia.');
                         }
                     }
                 },
@@ -60,6 +78,25 @@ class ReservaController extends Controller
             'estado' => ['sometimes', Rule::enum(EstadoReserva::class)],
         ];
     }
+
+    private function mapaOcupados(?Reserva $ignorar = null): array
+    {
+        $reservasAtivas = Reserva::with('horarios:id')
+            ->whereIn('estado', [EstadoReserva::Pendente, EstadoReserva::Confirmada])
+            ->when($ignorar?->exists, fn ($q) => $q->where('id', '!=', $ignorar->id))
+            ->get(['id', 'data', 'sala_id']);
+
+        $mapa = [];
+        foreach ($reservasAtivas as $r) {
+            $dia = $r->data->format('Y-m-d');
+            foreach ($r->horarios as $h) {
+                $mapa[$dia][$r->sala_id][] = $h->id;
+            }
+        }
+
+        return $mapa;
+    }
+
     public function minhasReservas()
     {
         $reservas = Reserva::with(['utilizador', 'sala.edificio', 'horarios'])
@@ -111,8 +148,9 @@ class ReservaController extends Controller
         $horarios = Horario::orderBy('hora_inicio')->get();
         $dataParam = $request->query('data');
         $dataSelecionada = ($dataParam && $dataParam >= date('Y-m-d')) ? $dataParam : date('Y-m-d');
+        $ocupados = $this->mapaOcupados();
 
-        return view('reservas.create', compact('reserva', 'edificios', 'salas', 'horarios', 'dataSelecionada'));
+        return view('reservas.create', compact('reserva', 'edificios', 'salas', 'horarios', 'dataSelecionada', 'ocupados'));
     }
 
     /**
@@ -156,8 +194,9 @@ class ReservaController extends Controller
         $edificios = Edificio::orderBy('nome')->get();
         $salas = Sala::with('edificio')->orderBy('nome_numero')->get();
         $horarios = Horario::orderBy('hora_inicio')->get();
+        $ocupados = $this->mapaOcupados($reserva);
 
-        return view('reservas.edit', compact('reserva', 'edificios', 'salas', 'horarios'));
+        return view('reservas.edit', compact('reserva', 'edificios', 'salas', 'horarios', 'ocupados'));
     }
 
     /**

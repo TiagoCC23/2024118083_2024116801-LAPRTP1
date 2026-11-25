@@ -18,7 +18,7 @@
         <div class="row g-3 text-white-50 small mb-4">
             <div class="col-md-6">Edifício: <strong class="text-white">{{ $reserva->sala->edificio->nome ?? '—' }}</strong></div>
             <div class="col-md-6">Utilizador: <strong class="text-white">{{ $reserva->utilizador->nome ?? '—' }}</strong></div>
-            <div class="col-md-6">Tipo de Uso: <strong class="text-white">{{ $reserva->tipo_de_uso }}</strong></div>
+            <div class="col-md-6">Tipo de Uso: <strong class="text-white">{{ $reserva->tipo_de_uso_label }}</strong></div>
             <div class="col-md-6">Pessoas: <strong class="text-white">{{ $reserva->quantidade_pessoas }}</strong></div>
             <div class="col-12">
                 Horários:

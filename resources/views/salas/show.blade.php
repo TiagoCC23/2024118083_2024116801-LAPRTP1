@@ -19,7 +19,7 @@
         </div>
 
         <div class="row g-3 text-white-50 small">
-            <div class="col-md-6">Tipo de Sala: <strong class="text-white">{{ $sala->tipo_sala }}</strong></div>
+            <div class="col-md-6">Tipo de Sala: <strong class="text-white">{{ $sala->tipo_sala_label }}</strong></div>
             <div class="col-md-6">Capacidade Máxima: <strong class="text-white">{{ $sala->capacidade_maxima }} pessoas</strong></div>
             <div class="col-md-6">Piso: <strong class="text-white">{{ $sala->piso }}</strong></div>
             <div class="col-md-6">Disponibilidade: <x-badge-status :estado="$sala->disponibilidade" /></div>

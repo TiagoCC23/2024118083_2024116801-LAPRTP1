@@ -40,4 +40,18 @@ class Reserva extends Model
     {
         return $this->hasOne(Avaliacao::class);
     }
+
+    public function getTipoDeUsoLabelAttribute(): string
+    {
+        return match ($this->tipo_de_uso) {
+            'AulaPratica' => 'Aula Prática',
+            'AulaTeorica' => 'Aula Teórica',
+            'Estudo' => 'Estudo',
+            'Defesa' => 'Defesa',
+            'Palestra' => 'Palestra',
+            'Leitura' => 'Leitura',
+            'Outro' => 'Outro',
+            default => $this->tipo_de_uso,
+        };
+    }
 }

@@ -5,6 +5,14 @@
     @endif
 
     <div class="mb-3">
+        <label for="data" class="form-label text-uppercase text-white-50 small">Data da Reserva *</label>
+        <input type="date" id="data" name="data"
+               min="{{ date('Y-m-d') }}"
+               value="{{ old('data', $reserva->data?->format('Y-m-d') ?? $dataSelecionada ?? date('Y-m-d')) }}"
+               required class="form-control glass-input">
+    </div>
+
+    <div class="mb-3">
         <label for="sala_id" class="form-label text-uppercase text-white-50 small">Sala Pretendida *</label>
         <select id="sala_id" name="sala_id" required class="form-select glass-select">
             <option value="" disabled {{ old('sala_id', $reserva->sala_id ?? '') ? '' : 'selected' }}>Selecione a Sala</option>
@@ -20,7 +28,16 @@
         <div class="col-md-6">
             <label for="tipo_de_uso" class="form-label text-uppercase text-white-50 small">Tipo de Uso *</label>
             <select id="tipo_de_uso" name="tipo_de_uso" required class="form-select glass-select">
-                @foreach(['SalaDeEstudo' => 'Sala de Estudo', 'Laboratorio' => 'Laboratório', 'Leitura' => 'Leitura', 'Outro' => 'Outro'] as $val => $label)
+                <option value="" disabled {{ old('tipo_de_uso', $reserva->tipo_de_uso ?? '') ? '' : 'selected' }}>Selecione o Tipo de Uso</option>
+                @foreach([
+                    'AulaPratica' => 'Aula Prática',
+                    'AulaTeorica' => 'Aula Teórica',
+                    'Estudo'      => 'Estudo',
+                    'Defesa'      => 'Defesa',
+                    'Palestra'    => 'Palestra',
+                    'Leitura'     => 'Leitura',
+                    'Outro'       => 'Outro',
+                ] as $val => $label)
                     <option value="{{ $val }}" {{ old('tipo_de_uso', $reserva->tipo_de_uso ?? '') === $val ? 'selected' : '' }}>
                         {{ $label }}
                     </option>
@@ -50,7 +67,7 @@
 
     <div class="mb-4">
         <label class="form-label text-uppercase text-white-50 small d-block mb-1">
-            Horários Pretendidos (1 horário ou horários seguidos) *
+            Horários Pretendidos (Máx. 3 blocos seguidos) *
         </label>
         <small class="text-white-50 d-block mb-2" style="font-size: 0.72rem;">
             Ao escolher um bloco horário, apenas o bloco imediatamente seguinte/anterior pode ser adicionado.
@@ -76,68 +93,118 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const checkboxes = Array.from(document.querySelectorAll('.horario-checkbox'));
-            const inputData = document.getElementById('data');
+    <!-- BOTÕES DE CANCELAR E SUBMETER RESERVA -->
+    <div class="pt-2 d-flex justify-content-between align-items-center">
+        <a href="{{ route('reservas.index') }}" class="btn btn-glass-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-liquid">
+            <i class="bi bi-check2-circle me-1"></i> {{ $reserva->exists ? 'Atualizar Reserva' : 'Confirmar Reserva' }}
+        </button>
+    </div>
+</form>
 
-            // impede escolher Domingo no input date
-            inputData?.addEventListener('change', function () {
-                if (!this.value) return;
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = Array.from(document.querySelectorAll('.horario-checkbox'));
+        const inputData = document.getElementById('data');
+        const selectSala = document.getElementById('sala_id');
+        const mapaOcupados = @json($ocupados ?? []);
+        const MAX_BLOCOS = 3;
+
+        function obterHorariosOcupados() {
+            const dataVal = inputData?.value;
+            const salaVal = selectSala?.value;
+            if (!dataVal || !salaVal) return [];
+            return (mapaOcupados[dataVal] && mapaOcupados[dataVal][salaVal])
+                ? mapaOcupados[dataVal][salaVal].map(Number)
+                : [];
+        }
+
+        function atualizarHorarios() {
+            const idsOcupados = obterHorariosOcupados();
+
+            checkboxes.forEach(cb => {
+                const idHorario = parseInt(cb.value, 10);
+                const label = cb.nextElementSibling;
+                if (!label.dataset.originalText) {
+                    label.dataset.originalText = label.innerText.trim();
+                }
+
+                if (idsOcupados.includes(idHorario)) {
+                    cb.checked = false;
+                    cb.disabled = true;
+                    cb.dataset.ocupado = '1';
+                    label.classList.remove('btn-outline-light');
+                    label.classList.add('btn-outline-danger', 'opacity-50', 'text-decoration-line-through');
+                    label.innerText = label.dataset.originalText + ' (Indisponível)';
+                } else {
+                    cb.dataset.ocupado = '0';
+                    label.classList.remove('btn-outline-danger', 'opacity-50', 'text-decoration-line-through');
+                    label.classList.add('btn-outline-light');
+                    label.innerText = label.dataset.originalText;
+                }
+            });
+
+            const marcados = checkboxes
+                .filter(cb => cb.checked && cb.dataset.ocupado !== '1')
+                .map(cb => parseInt(cb.dataset.index, 10))
+                .sort((a, b) => a - b);
+
+            if (marcados.length === 0) {
+                checkboxes.forEach(cb => {
+                    if (cb.dataset.ocupado === '1') return;
+                    cb.disabled = false;
+                    cb.dataset.lockedMiddle = '0';
+                    cb.nextElementSibling?.classList.remove('opacity-25');
+                });
+                return;
+            }
+
+            const min = marcados[0];
+            const max = marcados[marcados.length - 1];
+
+            checkboxes.forEach(cb => {
+                if (cb.dataset.ocupado === '1') return;
+
+                const idx = parseInt(cb.dataset.index, 10);
+                const podeClicar = cb.checked
+                    ? (idx === min || idx === max)
+                    : (marcados.length < MAX_BLOCOS && (idx === min - 1 || idx === max + 1));
+
+                if (!cb.checked) {
+                    cb.disabled = !podeClicar;
+                    cb.nextElementSibling?.classList.toggle('opacity-25', !podeClicar);
+                } else {
+                    cb.disabled = false;
+                    cb.nextElementSibling?.classList.remove('opacity-25');
+                    cb.dataset.lockedMiddle = (!podeClicar) ? '1' : '0';
+                }
+            });
+        }
+
+        inputData?.addEventListener('change', function () {
+            if (this.value) {
                 const [y, m, d] = this.value.split('-').map(Number);
                 const dataObj = new Date(y, m - 1, d);
                 if (dataObj.getDay() === 0) {
                     alert('Não é possível efetuar reservas ao Domingo.');
                     this.value = '';
                 }
-            });
+            }
+            atualizarHorarios();
+        });
 
-            function atualizarHorariosAdjacentes() {
-                const marcados = checkboxes
-                    .filter(cb => cb.checked)
-                    .map(cb => parseInt(cb.dataset.index, 10))
-                    .sort((a, b) => a - b);
+        selectSala?.addEventListener('change', atualizarHorarios);
 
-                if (marcados.length === 0) {
-                    checkboxes.forEach(cb => {
-                        cb.disabled = false;
-                        cb.nextElementSibling?.classList.remove('opacity-25');
-                    });
+        checkboxes.forEach(cb => {
+            cb.addEventListener('click', (e) => {
+                if (cb.dataset.lockedMiddle === '1' || cb.dataset.ocupado === '1') {
+                    e.preventDefault();
                     return;
                 }
-
-                const MAX = 3;
-                const min = marcados[0];
-                const max = marcados[marcados.length - 1];
-
-                checkboxes.forEach(cb => {
-                    const idx = parseInt(cb.dataset.index, 10);
-                    const podeClicar = cb.checked
-                        ? (idx === min || idx === max)
-                        : (marcados.length < MAX && (idx === min - 1 || idx === max + 1));
-
-                    if (!cb.checked) {
-                        cb.disabled = !podeClicar;
-                        cb.nextElementSibling?.classList.toggle('opacity-25', !podeClicar);
-                    } else {
-                        cb.disabled = false;
-                        cb.nextElementSibling?.classList.remove('opacity-25');
-                        cb.dataset.lockedMiddle = (!podeClicar) ? '1' : '0';
-                    }
-                });
-            }
-
-            checkboxes.forEach(cb => {
-                cb.addEventListener('click', (e) => {
-                    if (cb.dataset.lockedMiddle === '1') {
-                        e.preventDefault();
-                        return;
-                    }
-                    atualizarHorariosAdjacentes();
-                });
+                atualizarHorarios();
             });
-
-            atualizarHorariosAdjacentes();
         });
-    </script>
-</form>
+
+        atualizarHorarios();
+    });
+</script>

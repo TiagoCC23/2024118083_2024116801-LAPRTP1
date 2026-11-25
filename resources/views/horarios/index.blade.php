@@ -67,37 +67,18 @@
 
 @section('conteudo')
     @php
-        // Calcula as próximas datas de Segunda (1) a Sábado (6) a partir de hoje
-        $hoje = \Carbon\Carbon::today();
-        $inicioSemana = $hoje->isSunday() ? $hoje->copy()->addDay() : $hoje->copy()->startOfWeek(\Carbon\Carbon::MONDAY);
-        $nomesDias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        $diasSemana = [];
-        foreach ($nomesDias as $i => $nomeDia) {
-            $dataDia = $inicioSemana->copy()->addDays($i);
-            // Se o dia desta semana já passou, aponta para o da próxima semana
-            if ($dataDia->lt($hoje)) {
-                $dataDia->addWeek();
-            }
-            $diasSemana[] = [
-                'nome' => $nomeDia,
-                'data' => $dataDia->format('Y-m-d'),
-                'label' => $dataDia->format('d/m'),
-            ];
-        }
+        $dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     @endphp
 
     <div class="liquid-glass-card p-4 mb-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
                 <h2 class="font-display text-uppercase text-white fw-bold mb-1">Horário Semanal</h2>
-                <p class="text-white-50 small mb-0">
-                    Selecione <strong>1 horário</strong> ou <strong>horários consecutivos no mesmo dia</strong> para prosseguir com a reserva.
-                </p>
+                <p class="text-white-50 small mb-0">Blocos horários disponíveis para reserva (máx. 3 blocos seguidos).</p>
             </div>
 
             <div class="d-flex align-items-center gap-2">
                 <form id="form-prosseguir-reserva" action="{{ route('reservas.create') }}" method="GET" class="d-flex gap-2 align-items-center m-0">
-                    <input type="hidden" name="data" id="horario-data-input" value="">
                     <div id="horarios-hidden-inputs"></div>
 
                     <button type="button" id="btn-limpar-selecao" class="btn btn-glass-secondary d-none">
@@ -123,11 +104,8 @@
                 <thead>
                 <tr>
                     <th class="header-day">Bloco</th>
-                    @foreach($diasSemana as $dia)
-                        <th class="header-day">
-                            {{ $dia['nome'] }}
-                            <span class="d-block text-white-50 fw-normal" style="font-size: 0.65rem;">{{ $dia['label'] }}</span>
-                        </th>
+                    @foreach($dias as $dia)
+                        <th class="header-day">{{ $dia }}</th>
                     @endforeach
                     @if(auth()->user()?->isAdmin())
                         <th class="header-day">Ações</th>
@@ -138,11 +116,10 @@
                 @forelse($horarios as $rowIndex => $horario)
                     <tr>
                         <td class="header-hour">{{ $horario->intervalo }}</td>
-                        @foreach($diasSemana as $colIndex => $dia)
+                        @foreach($dias as $colIndex => $dia)
                             <td class="slot-cell">
                                 <button type="button"
                                         class="slot-item slot-free btn-slot-horario"
-                                        data-dia="{{ $dia['data'] }}"
                                         data-col="{{ $colIndex }}"
                                         data-row="{{ $rowIndex }}"
                                         data-horario-id="{{ $horario->id }}">
@@ -180,13 +157,10 @@
             const btnProsseguir = document.getElementById('btn-prosseguir-reserva');
             const btnLimpar = document.getElementById('btn-limpar-selecao');
             const countBlocos = document.getElementById('count-blocos');
-            const inputData = document.getElementById('horario-data-input');
             const containerInputs = document.getElementById('horarios-hidden-inputs');
-
-            const MAX = 3;
+            const MAX_BLOCOS = 3;
 
             let colSelecionada = null;
-            let dataSelecionada = null;
             let rowsSelecionadas = [];
 
             function atualizarEstadoGrelha() {
@@ -194,7 +168,6 @@
 
                 if (rowsSelecionadas.length === 0) {
                     colSelecionada = null;
-                    dataSelecionada = null;
                 }
 
                 const minRow = rowsSelecionadas.length ? rowsSelecionadas[0] : null;
@@ -216,25 +189,17 @@
                     if (estaSelecionado) {
                         btn.classList.add('slot-selected');
                         btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Selecionado';
-                        // Se houver 3+ selecionados, só deixa desmarcar as pontas para não partir a sequência
-                        if (rowsSelecionadas.length > 2 && row !== minRow && row !== maxRow) {
-                            btn.title = 'Desmarque primeiro os horários das extremidades';
-                        }
-                    } else if (rowsSelecionadas.length < MAX && col === colSelecionada && (row === minRow - 1 || row === maxRow + 1)) {
-                        // Único próximo horário permitido (imediatamente anterior ou seguinte no mesmo dia)
+                    } else if (rowsSelecionadas.length < MAX_BLOCOS && col === colSelecionada && (row === minRow - 1 || row === maxRow + 1)) {
                         btn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> + Seguinte';
                     } else {
-                        // Outro dia da semana ou horário não consecutivo -> bloqueado
                         btn.classList.add('slot-disabled');
                         btn.disabled = true;
                         btn.innerHTML = '<i class="bi bi-dash-circle me-1"></i> Bloqueado';
                     }
                 });
 
-                // Atualiza formulário de envio
                 containerInputs.innerHTML = '';
                 if (rowsSelecionadas.length > 0) {
-                    inputData.value = dataSelecionada;
                     rowsSelecionadas.forEach(r => {
                         const btn = botoes.find(b => parseInt(b.dataset.col, 10) === colSelecionada && parseInt(b.dataset.row, 10) === r);
                         if (btn) {
@@ -249,7 +214,6 @@
                     btnProsseguir.classList.remove('d-none');
                     btnLimpar.classList.remove('d-none');
                 } else {
-                    inputData.value = '';
                     btnProsseguir.classList.add('d-none');
                     btnLimpar.classList.add('d-none');
                 }
@@ -259,22 +223,19 @@
                 btn.addEventListener('click', () => {
                     const col = parseInt(btn.dataset.col, 10);
                     const row = parseInt(btn.dataset.row, 10);
-                    const dia = btn.dataset.dia;
 
                     if (rowsSelecionadas.length === 0) {
                         colSelecionada = col;
-                        dataSelecionada = dia;
                         rowsSelecionadas = [row];
                     } else if (col === colSelecionada) {
                         const minRow = rowsSelecionadas[0];
                         const maxRow = rowsSelecionadas[rowsSelecionadas.length - 1];
 
                         if (rowsSelecionadas.includes(row)) {
-                            // Só permite remover das extremidades para manter os restantes consecutivos
                             if (row === minRow || row === maxRow) {
                                 rowsSelecionadas = rowsSelecionadas.filter(r => r !== row);
                             }
-                        } else if (rowsSelecionadas.length < MAX && (row === minRow - 1 || row === maxRow + 1)) {
+                        } else if (rowsSelecionadas.length < MAX_BLOCOS && (row === minRow - 1 || row === maxRow + 1)) {
                             rowsSelecionadas.push(row);
                         }
                     }

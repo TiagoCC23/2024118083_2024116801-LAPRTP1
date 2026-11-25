@@ -27,7 +27,6 @@
         <div class="glass-schedule-card p-3">
             <div class="table-responsive">
                 <table class="table table-cronograma align-middle">
-                    <thead>
                     <tr>
                         <th>Sala</th>
                         <th>Edifício</th>
@@ -37,13 +36,11 @@
                         <th class="text-center">Estado</th>
                         <th class="text-end">Ações</th>
                     </tr>
-                    </thead>
-                    <tbody>
                     @forelse($salas as $sala)
                         <tr>
                             <td class="fw-bold text-white">{{ $sala->nome_numero }}</td>
                             <td class="text-white-50">{{ $sala->edificio->nome ?? '—' }}</td>
-                            <td class="text-white-50">{{ $sala->tipo_sala }}</td>
+                            <td class="text-white-50">{{ $sala->tipo_sala_label }}</td>
                             <td class="text-white-50">{{ $sala->piso }}</td>
                             <td class="text-white-50">{{ $sala->capacidade_maxima }}</td>
                             <td class="text-center"><x-badge-status :estado="$sala->disponibilidade" /></td>
@@ -70,7 +67,6 @@
                             <td colspan="7" class="text-center py-4 text-white-50">Ainda não existem salas registadas.</td>
                         </tr>
                     @endforelse
-                    </tbody>
                 </table>
             </div>
 
