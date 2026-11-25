@@ -1,5 +1,3 @@
-@import 'tailwindcss';
-
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
@@ -305,3 +303,23 @@ body.bg-fundo-horarios  { --bg-image: url('/public/images/fundo3.jpg'); }
 .d-none {
     display: none !important;
 }
+
+.pagination .page-link {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.pagination .page-item.active .page-link {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #000000;
+    font-weight: 700;
+}
+
+.pagination .page-item.disabled .page-link {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.35);
+}
+
