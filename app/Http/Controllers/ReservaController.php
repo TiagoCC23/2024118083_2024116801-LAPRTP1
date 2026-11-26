@@ -7,6 +7,9 @@ use App\Models\Horario;
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Enums\EstadoReserva;
+use App\Mail\ReservaCriada;
+use App\Mail\ReservaAprovada;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -47,8 +50,15 @@ class ReservaController extends Controller
             'estado' => ['required', Rule::enum(EstadoReserva::class)],
         ]);
 
+        $novoEstado =EstadoReserva::from($validated['estado']);
+
         /* Atualiza o estado */
-        $reserva->update(['estado' => EstadoReserva::from($validated['estado']),]);
+        $reserva->update(['estado' => $novoEstado]);
+
+        if($novoEstado === EstadoReserva::Confirmada){
+            $reserva->load(['utilizador', 'sala']);
+            Mail::to($reserva->utilizador->email)->send(new ReservaAprovada($reserva));
+        }
 
         /* Volta para onde o utilizador estava*/
         return back()->with('success', 'Estado da reserva atualizado!');
@@ -105,6 +115,8 @@ class ReservaController extends Controller
         ]);
 
         $reserva->horarios()->sync($validatedData['horarios']);
+
+        Mail::to($request->user()->email)->send(new ReservaCriada($reserva));
 
         return redirect()->route('reservas.index')->with('ok', 'Reserva criada com sucesso!');
     }

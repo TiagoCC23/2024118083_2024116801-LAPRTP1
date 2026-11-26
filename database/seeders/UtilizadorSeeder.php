@@ -6,6 +6,7 @@ use App\Enums\TipoUtilizador;
 use App\Models\Edificio;
 use App\Models\Utilizador;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UtilizadorSeeder extends Seeder
 {
@@ -14,7 +15,7 @@ class UtilizadorSeeder extends Seeder
         Utilizador::create([
             'nome' => env('SEED_ADMIN_NOME', 'Admin UFP'),
             'email' => env('SEED_ADMIN_EMAIL', 'admin@ufp.test'),
-            'password_hash' => env('SEED_ADMIN_PASSWORD', 'admin'),
+            'password_hash' =>  Hash::make(env('SEED_ADMIN_PASSWORD', 'admin')),
             'tipo_user' => TipoUtilizador::Admin, // Enum
             'edificio_id' => Edificio::where('sigla', 'UFP')->value('id'),
             'verificado_em' => now(),

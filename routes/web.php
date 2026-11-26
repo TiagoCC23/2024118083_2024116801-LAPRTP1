@@ -35,26 +35,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
 });
 
-/* Momento da verificaçao do email*/
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-/* Rota para quando o utilizador clica no link do email */
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill(); /* Marca como verificado na base de dados */
-    return redirect('/')->with('success', 'Email verificado com sucesso');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-/* Rota para reenviar o email */
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Link de verificação reenviado!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
 
 // 3. Resources - Admin
-Route::middleware(['auth', 'email.verificado', 'admin'])->group(function (){
+Route::middleware(['auth', 'admin'])->group(function (){
     Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->except(['index', 'show']);
     Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->except(['index', 'show']);
     Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->except(['index', 'show']);
@@ -63,7 +46,7 @@ Route::middleware(['auth', 'email.verificado', 'admin'])->group(function (){
 
 // 3. Resources - Users
 
-Route::middleware(['auth', 'email.verificado'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/home', function () {
         return view('home');
     })->name('home');

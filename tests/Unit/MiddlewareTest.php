@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Enums\TipoUtilizador;
 use App\Http\Middleware\CheckAdmin;
-use App\Http\Middleware\CheckEmailVerificado;
 use App\Models\Utilizador;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,7 +63,7 @@ class MiddlewareTest extends TestCase
 
     public function test_check_email_verificado_redirects_unverified_user(): void
     {
-        $middleware = new CheckEmailVerificado();
+
         $user = new Utilizador(['verificado_em' => null]);
 
         $request = Request::create('/home', 'GET');
