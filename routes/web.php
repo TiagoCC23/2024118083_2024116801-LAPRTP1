@@ -10,12 +10,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
-Route::get('/', function () {
-    return view('auth.auth');
-});
+
 
 // 2. Rotas de Autenticação
 Route::middleware(['guest'])->group(function () {
+    Route::get('/', function () {
+        return view('auth.auth');
+    });
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 
@@ -41,8 +42,7 @@ Route::middleware(['auth', 'admin'])->group(function (){
     Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->except(['index', 'show']);
     Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->except(['index', 'show']);
     Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->except(['index', 'show']);
-    /* TODO FALTA ADICIONAR O PAINEL ADMIN */
-});
+    });
 
 // 3. Resources - Users
 
