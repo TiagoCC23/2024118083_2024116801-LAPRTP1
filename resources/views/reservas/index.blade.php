@@ -21,7 +21,15 @@
                 </a>
             </div>
         </div>
-
+        @if (auth()->user()->tipo_user === \App\Enums\TipoUtilizador::Admin)
+            <form action="{{ route('reservas.importar') }}" method="POST" enctype="multipart/form-data" class="d-inline-flex align-items-center gap-2">
+                @csrf
+                <input type="file" name="ficheiros[]" accept=".csv" multiple required class="form-control form-control-sm">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    Importar CSV
+                </button>
+            </form>
+        @endif
         <div class="glass-schedule-card p-2 p-md-3">
             <div class="table-responsive">
                 <table class="table table-cronograma align-middle">

@@ -7,15 +7,12 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\SalaController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
-
 
 
 // 2. Rotas de Autenticação
 Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
-        return view('auth.auth');
+            return view('auth.auth');
     });
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -25,24 +22,24 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
-    Route::middleware('google.auth')->group(function (){
-        Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
-        Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+Route::middleware(['google.auth'])->group(function (){
+    Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
+    Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
     });
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
-});
-
 
 // 3. Resources - Admin
-Route::middleware(['auth', 'admin'])->group(function (){
+Route::middleware(['admin'])->group(function () {
     Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->except(['index', 'show']);
     Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->except(['index', 'show']);
     Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->except(['index', 'show']);
+    Route::post('/reservas/importar.csv', [ReservaController::class, 'importarCsv'])->name('reservas.importar');
     });
+});
 
 // 3. Resources - Users
 

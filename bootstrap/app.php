@@ -14,9 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['admin' => \App\Http\Middleware\CheckAdmin::class,
                             'google.auth'=> \App\Http\Middleware\GoogleAuth::class,
-                                function (Middleware $middleware):void {
-                            $middleware->redirectUsersTo(fn() => route('reservas.index'));/* Redireciona o guest para */
-                                }]);
+                              ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
