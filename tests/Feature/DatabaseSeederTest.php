@@ -6,7 +6,6 @@ use App\Enums\Disponibilidade;
 use App\Enums\EstadoReserva;
 use App\Enums\TipoUtilizador;
 use App\Models\Avaliacao;
-use App\Models\Edificio;
 use App\Models\Horario;
 use App\Models\Ocupacao;
 use App\Models\Reserva;
@@ -23,6 +22,7 @@ use Database\Seeders\SalaSeeder;
 use Database\Seeders\UtilizadorSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 use Tests\TestCase;
 
 class DatabaseSeederTest extends TestCase
@@ -40,21 +40,21 @@ class DatabaseSeederTest extends TestCase
 
         // 2. Utilizadores e hashes de password
         $this->assertDatabaseCount('utilizadores', 3);
-        $admin = Utilizador::where('email', 'admin@ufp.test')->firstOrFail();
-        $estudante1 = Utilizador::where('email', 'estudante1@ufp.test')->firstOrFail();
-        $estudante2 = Utilizador::where('email', 'estudante2@ufp.test')->firstOrFail();
+        $admin = Utilizador::where('email', env('SEED_ADMIN_EMAIL', 'admin@ufp.test'))->firstOrFail();
+        $estudante1 = Utilizador::where('email', env('SEED_ESTUDANTE1_EMAIL', 'estudante1@ufp.test'))->firstOrFail();
+        $estudante2 = Utilizador::where('email', env('SEED_ESTUDANTE2_EMAIL', 'estudante2@ufp.test'))->firstOrFail();
 
         $this->assertSame(TipoUtilizador::Admin, $admin->tipo_user);
         $this->assertTrue($admin->hasVerifiedEmail());
         $this->assertNotNull($admin->edificio_id);
-        $this->assertTrue(Hash::check('admin', $admin->password_hash));
+        $this->assertTrue(Hash::check(env('SEED_ADMIN_PASSWORD', 'admin'), $admin->password_hash));
 
         $this->assertSame(TipoUtilizador::Estudante, $estudante1->tipo_user);
-        $this->assertTrue(Hash::check('estudante1', $estudante1->password_hash));
-        $this->assertTrue(Hash::check('estudante2', $estudante2->password_hash));
+        $this->assertTrue(Hash::check(env('SEED_ESTUDANTE1_PASSWORD', 'estudante1'), $estudante1->password_hash));
+        $this->assertTrue(Hash::check(env('SEED_ESTUDANTE2_PASSWORD', 'estudante2'), $estudante2->password_hash));
 
-        // 3. Salas
-        $this->assertDatabaseCount('salas', 3);
+        // 3. Salas (2 base + 31 CSV UFP + 1 ESS = 34)
+        $this->assertDatabaseCount('salas', 34);
         $this->assertDatabaseHas('salas', [
             'nome_numero' => 'Sala 302',
             'tipo_sala' => 'SalaDeAula',
@@ -112,12 +112,12 @@ class DatabaseSeederTest extends TestCase
         $this->assertSame(5, $avaliacao->nota);
         $this->assertSame(EstadoReserva::Confirmada, $avaliacao->reserva->estado);
 
-        // 8. Admin administra apenas as salas do seu edifício (UFP -> 2 salas)
-        $this->assertDatabaseCount('administra', 2);
-        $this->assertSame(2, $admin->salasAdministradas()->count());
+        // 8. Admin administra apenas as salas do seu edifício (UFP -> 33 salas)
+        $this->assertDatabaseCount('administra', 33);
+        $this->assertSame(33, $admin->salasAdministradas()->count());
 
-        // 9. Ocupações
-        $this->assertDatabaseCount('ocupacoes', 1);
+        // 9. Ocupações (importadas dos CSVs em database/seeders/data ou fallback)
+        $this->assertGreaterThanOrEqual(1, Ocupacao::count());
         $ocupacao = Ocupacao::with('sala')->firstOrFail();
         $this->assertNotNull($ocupacao->sala);
         $this->assertInstanceOf(Carbon::class, $ocupacao->data_inicio);
@@ -128,17 +128,19 @@ class DatabaseSeederTest extends TestCase
     public function test_database_seeder_e_idempotente(): void
     {
         $this->seed(DatabaseSeeder::class);
+        $ocupacoesIniciais = Ocupacao::count();
+
         $this->seed(DatabaseSeeder::class);
 
         $this->assertDatabaseCount('edificios', 2);
         $this->assertDatabaseCount('utilizadores', 3);
-        $this->assertDatabaseCount('salas', 3);
+        $this->assertDatabaseCount('salas', 34);
         $this->assertDatabaseCount('horarios', 10);
         $this->assertDatabaseCount('reservas', 2);
         $this->assertDatabaseCount('reserva_horario', 5);
         $this->assertDatabaseCount('avaliacoes', 1);
-        $this->assertDatabaseCount('administra', 2);
-        $this->assertDatabaseCount('ocupacoes', 1);
+        $this->assertDatabaseCount('administra', 33);
+        $this->assertDatabaseCount('ocupacoes', $ocupacoesIniciais);
     }
 
     public function test_horario_seeder_gera_blocos_consecutivos_de_uma_hora(): void
@@ -197,10 +199,19 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('avaliacoes', 0);
     }
 
-    public function test_ocupacao_seeder_falha_graciosamente_sem_salas(): void
+    public function test_ocupacao_seeder_sem_salas(): void
     {
+        $temCsvs = !empty(glob(database_path('seeders/data/*.csv')));
+
+        if ($temCsvs) {
+            $this->expectException(RuntimeException::class);
+            $this->expectExceptionMessage('Sala não encontrada:');
+        }
+
         $this->seed(OcupacaoSeeder::class);
 
-        $this->assertDatabaseCount('ocupacoes', 0);
+        if (!$temCsvs) {
+            $this->assertDatabaseCount('ocupacoes', 0);
+        }
     }
 }
