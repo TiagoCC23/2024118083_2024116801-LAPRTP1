@@ -43,34 +43,34 @@ class ReservaSeeder extends Seeder
             $dataFutura = $dataFutura->addDay();
         }
 
-        $r1 = Reserva::firstOrCreate(
-            [
+        $r1 = Reserva::whereDate('data', $dataPassada->toDateString())
+            ->where('sala_id', $salas[0]->id)
+            ->where('utilizador_id', $estudante1->id)
+            ->first()
+            ?? Reserva::create([
                 'data' => $dataPassada->toDateString(),
                 'sala_id' => $salas[0]->id,
                 'utilizador_id' => $estudante1->id,
-            ],
-            [
                 'quantidade_pessoas' => 1,
                 'estado' => EstadoReserva::Confirmada,
                 'tipo_de_uso' => 'Estudo',
-            ]
-        );
+            ]);
         $r1->horarios()->sync([$horarios[0]->id, $horarios[1]->id]);
 
         $sala2 = $salas->get(1) ?? $salas[0];
 
-        $r2 = Reserva::firstOrCreate(
-            [
+        $r2 = Reserva::whereDate('data', $dataFutura->toDateString())
+            ->where('sala_id', $sala2->id)
+            ->where('utilizador_id', $estudante2->id)
+            ->first()
+            ?? Reserva::create([
                 'data' => $dataFutura->toDateString(),
                 'sala_id' => $sala2->id,
                 'utilizador_id' => $estudante2->id,
-            ],
-            [
                 'quantidade_pessoas' => min(4, $sala2->capacidade_maxima),
                 'estado' => EstadoReserva::Pendente,
                 'tipo_de_uso' => 'AulaPratica',
-            ]
-        );
+            ]);
         $r2->horarios()->sync([$horarios[3]->id, $horarios[4]->id, $horarios[5]->id]);
     }
 }
