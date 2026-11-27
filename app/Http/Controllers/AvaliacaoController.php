@@ -14,11 +14,11 @@ use Illuminate\Validation\Rule;
 class AvaliacaoController extends Controller
 {
     private const PALAVRAS_PROIBIDAS = [
-        'merda', 'porra', 'caralho', 'puta', 'foda', 'foder', 'fodase',
-        'cabrao', 'cabra', 'corno', 'idiota', 'imbecil', 'estupido', 'burro',
-        'otario', 'babaca', 'arrombado', 'desgracado', 'bosta', 'cu', 'pila', 'cona',
-        'fds', 'pqp', 'fdp', 'vagabundo', 'vagabunda',
-        'ass', 'cunt', 'dick', 'cock', 'pussy'
+        'merda', 'porra', 'caralho', 'puta', 'foda', 'foder', 'fodase', 'foda-se',
+        'cabrao', 'cabrão', 'cabra', 'corno', 'idiota', 'imbecil', 'estupido', 'burro',
+        'otario', 'otário', 'babaca', 'arrombado', 'desgracado', 'desgraçado', 'bosta', 'cu', 'pila', 'cona',
+        'fds', 'pqp', 'fdp', 'vagabundo', 'vagabunda', 'buceta', 'boceta',
+        'ass', 'cunt', 'dick', 'cock', 'pussy', 'poop', 'shit'
     ];
 
     private function rules(?Avaliacao $avaliacao = null): array
