@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\TipoUtilizador;
+use App\Models\Edificio;
 use App\Models\Utilizador;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @extends Factory<Utilizador>
  */
-class UserFactory extends Factory
+class UtilizadorFactory extends Factory
 {
     /**
      * The current password being used by the factory.
@@ -27,11 +28,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'verificado_em' => now(),
+            'nome' => fake('pt_PT')->name(),
+            'email' => fake()->unique()->numerify('20########') . '@ufp.edu.pt',
             'password_hash' => static::$password ??= Hash::make('password'),
             'tipo_user' => TipoUtilizador::Estudante,
+            'edificio_id' => Edificio::inRandomOrder()->value('id'),
+            'verificado_em' => now(),
         ];
     }
 

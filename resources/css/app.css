@@ -488,4 +488,64 @@ span.flatpickr-weekday {
     border-color: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.35);
 }
+.input-glass-csv {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.78rem;
+    padding: 0.22rem 0.65rem 0.22rem 0.22rem;
+    transition: all 0.2s ease;
+}
 
+.input-glass-csv:hover,
+.input-glass-csv:focus {
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    outline: none;
+}
+
+.input-glass-csv::file-selector-button {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.35rem;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.32rem 0.7rem;
+    margin-right: 0.65rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.input-glass-csv::file-selector-button:hover {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.btn-glass-csv {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 0.9rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-glass-csv:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+}
