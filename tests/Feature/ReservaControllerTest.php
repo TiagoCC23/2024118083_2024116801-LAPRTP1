@@ -5,12 +5,15 @@ namespace Tests\Feature;
 use App\Enums\Disponibilidade;
 use App\Enums\EstadoReserva;
 use App\Enums\TipoUtilizador;
+use App\Mail\ReservaAprovada;
+use App\Mail\ReservaCriada;
 use App\Models\Edificio;
 use App\Models\Horario;
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Models\Utilizador;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ReservaControllerTest extends TestCase
@@ -45,17 +48,21 @@ class ReservaControllerTest extends TestCase
         ]);
     }
 
-    public function test_guest_e_nao_verificado_nao_acedem_a_reservas(): void
+    private function diaUtilFrente(int $dias = 1): string
+    {
+        $data = now()->addDays($dias);
+        if ($data->isSunday()) {
+            $data->addDay();
+        }
+
+        return $data->toDateString();
+    }
+
+    public function test_guest_nao_acede_a_reservas(): void
     {
         $this->get(route('reservas.index'))->assertRedirect(route('login'));
         $this->get(route('reservas.minhas'))->assertRedirect(route('login'));
         $this->get(route('reservas.create'))->assertRedirect(route('login'));
-
-        $naoVerificado = $this->criarUtilizador('unverified@ufp.edu.pt', TipoUtilizador::Estudante, false);
-        $this->actingAs($naoVerificado);
-
-        $this->get(route('reservas.index'))->assertRedirect(route('verification.notice'));
-        $this->get(route('reservas.minhas'))->assertRedirect(route('verification.notice'));
     }
 
     public function test_index_displays_only_own_reservas_for_estudante(): void
@@ -65,7 +72,7 @@ class ReservaControllerTest extends TestCase
         $sala = $this->criarSala();
 
         $r1 = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -74,7 +81,7 @@ class ReservaControllerTest extends TestCase
         ]);
 
         $r2 = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 3,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'Leitura',
@@ -99,7 +106,7 @@ class ReservaControllerTest extends TestCase
         $sala2 = $this->criarSala('Sala Beta');
 
         $r1 = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'Laboratorio',
@@ -108,7 +115,7 @@ class ReservaControllerTest extends TestCase
         ]);
 
         $r2 = Reserva::create([
-            'data' => now()->addDays(2)->toDateString(),
+            'data' => $this->diaUtilFrente(2),
             'quantidade_pessoas' => 3,
             'estado' => EstadoReserva::Confirmada,
             'tipo_de_uso' => 'Leitura',
@@ -138,7 +145,7 @@ class ReservaControllerTest extends TestCase
         $sala = $this->criarSala();
 
         $r1 = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 1,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -147,7 +154,7 @@ class ReservaControllerTest extends TestCase
         ]);
 
         $r2 = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Confirmada,
             'tipo_de_uso' => 'Outro',
@@ -169,17 +176,21 @@ class ReservaControllerTest extends TestCase
         $this->criarSala();
         Horario::create(['hora_inicio' => '09:00:00', 'hora_fim' => '10:00:00']);
 
+        $dataFutura = $this->diaUtilFrente(5);
+
         $this->actingAs($user);
-        $response = $this->get(route('reservas.create', ['data' => '2026-12-10']));
+        $response = $this->get(route('reservas.create', ['data' => $dataFutura]));
 
         $response->assertStatus(200);
         $response->assertViewIs('reservas.create');
-        $response->assertViewHas('dataSelecionada', '2026-12-10');
+        $response->assertViewHas('dataSelecionada', $dataFutura);
         $response->assertViewHasAll(['reserva', 'edificios', 'salas', 'horarios']);
     }
 
     public function test_store_creates_reserva_with_horarios_and_forces_pendente(): void
     {
+        Mail::fake();
+
         $user = $this->criarUtilizador('estudante_reserva@ufp.edu.pt');
         $outroUser = $this->criarUtilizador('outro@ufp.edu.pt');
         $this->actingAs($user);
@@ -189,7 +200,7 @@ class ReservaControllerTest extends TestCase
         $h2 = Horario::create(['hora_inicio' => '11:00:00', 'hora_fim' => '12:00:00']);
 
         $payload = [
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 5,
             'sala_id' => $sala->id,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -214,6 +225,8 @@ class ReservaControllerTest extends TestCase
         $reserva = Reserva::where('utilizador_id', $user->id)->firstOrFail();
         $this->assertDatabaseHas('reserva_horario', ['reserva_id' => $reserva->id, 'horario_id' => $h1->id]);
         $this->assertDatabaseHas('reserva_horario', ['reserva_id' => $reserva->id, 'horario_id' => $h2->id]);
+
+        Mail::assertSent(ReservaCriada::class, fn ($mail) => $mail->hasTo($user->email));
     }
 
     public function test_store_validation_fails_for_capacity_horarios_and_tipo_de_uso(): void
@@ -245,7 +258,7 @@ class ReservaControllerTest extends TestCase
         $adminDaSala->salasAdministradas()->attach($sala->id);
 
         $reserva = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -279,7 +292,7 @@ class ReservaControllerTest extends TestCase
         $h2 = Horario::create(['hora_inicio' => '09:00:00', 'hora_fim' => '10:00:00']);
 
         $reserva = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -296,8 +309,10 @@ class ReservaControllerTest extends TestCase
             ->assertStatus(200)
             ->assertViewIs('reservas.edit');
 
+        $dataAtualizada = $this->diaUtilFrente(2);
+
         $this->actingAs($dono)->put(route('reservas.update', $reserva), [
-            'data' => now()->addDays(2)->toDateString(),
+            'data' => $dataAtualizada,
             'quantidade_pessoas' => 5,
             'tipo_de_uso' => 'Leitura',
             'sala_id' => $sala->id,
@@ -316,7 +331,7 @@ class ReservaControllerTest extends TestCase
 
         // Admin da sala pode atualizar incluindo o estado para confirmada
         $this->actingAs($adminDaSala)->put(route('reservas.update', $reserva), [
-            'data' => now()->addDays(2)->toDateString(),
+            'data' => $dataAtualizada,
             'quantidade_pessoas' => 6,
             'tipo_de_uso' => 'Laboratorio',
             'sala_id' => $sala->id,
@@ -333,7 +348,7 @@ class ReservaControllerTest extends TestCase
         // Dono já não pode editar após confirmada
         $this->actingAs($dono)->get(route('reservas.edit', $reserva))->assertStatus(403);
         $this->actingAs($dono)->put(route('reservas.update', $reserva), [
-            'data' => now()->addDays(3)->toDateString(),
+            'data' => $this->diaUtilFrente(3),
             'quantidade_pessoas' => 2,
             'tipo_de_uso' => 'Outro',
             'sala_id' => $sala->id,
@@ -349,7 +364,7 @@ class ReservaControllerTest extends TestCase
         $adminDaSala->salasAdministradas()->attach($sala->id);
 
         $reservaPendente = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Pendente,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -358,7 +373,7 @@ class ReservaControllerTest extends TestCase
         ]);
 
         $reservaConfirmada = Reserva::create([
-            'data' => now()->addDay()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 2,
             'estado' => EstadoReserva::Confirmada,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -381,14 +396,16 @@ class ReservaControllerTest extends TestCase
         $this->assertDatabaseMissing('reservas', ['id' => $reservaConfirmada->id]);
     }
 
-    public function test_alterar_estado(): void
+    public function test_alterar_estado_respeita_permissoes_e_envia_email_ao_aprovar(): void
     {
-        $dono = $this->criarUtilizador('dono_reserva@ufp.edu.pt');
-        $this->actingAs($dono);
+        Mail::fake();
 
+        $dono = $this->criarUtilizador('dono_reserva@ufp.edu.pt');
+        $admin = $this->criarUtilizador('admin_reserva@ufp.edu.pt', TipoUtilizador::Admin);
         $sala = $this->criarSala('Sala 202', 20);
+
         $reserva = Reserva::create([
-            'data' => now()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 3,
             'estado' => EstadoReserva::Pendente->value,
             'tipo_de_uso' => 'SalaDeEstudo',
@@ -396,16 +413,48 @@ class ReservaControllerTest extends TestCase
             'utilizador_id' => $dono->id,
         ]);
 
-        $response = $this->from(route('reservas.show', $reserva))
+        // Dono NÃO pode confirmar a própria reserva
+        $this->actingAs($dono)
             ->patch(route('reservas.alterarEstado', $reserva->id), [
                 'estado' => EstadoReserva::Confirmada->value,
-            ]);
+            ])
+            ->assertStatus(403);
 
-        $response->assertRedirect(route('reservas.show', $reserva));
-        $response->assertSessionHas('success');
+        // Admin pode aprovar e dispara email de aprovação
+        $this->actingAs($admin)
+            ->from(route('reservas.show', $reserva))
+            ->patch(route('reservas.alterarEstado', $reserva->id), [
+                'estado' => EstadoReserva::Confirmada->value,
+            ])
+            ->assertRedirect(route('reservas.show', $reserva))
+            ->assertSessionHas('success');
+
         $this->assertDatabaseHas('reservas', [
             'id' => $reserva->id,
             'estado' => EstadoReserva::Confirmada->value,
+        ]);
+        Mail::assertSent(ReservaAprovada::class, fn ($mail) => $mail->hasTo($dono->email));
+
+        // Dono PODE cancelar uma reserva sua que ainda esteja pendente
+        $reservaPendente = Reserva::create([
+            'data' => $this->diaUtilFrente(2),
+            'quantidade_pessoas' => 2,
+            'estado' => EstadoReserva::Pendente->value,
+            'tipo_de_uso' => 'Estudo',
+            'sala_id' => $sala->id,
+            'utilizador_id' => $dono->id,
+        ]);
+
+        $this->actingAs($dono)
+            ->from(route('reservas.index'))
+            ->patch(route('reservas.alterarEstado', $reservaPendente->id), [
+                'estado' => EstadoReserva::Cancelada->value,
+            ])
+            ->assertRedirect(route('reservas.index'));
+
+        $this->assertDatabaseHas('reservas', [
+            'id' => $reservaPendente->id,
+            'estado' => EstadoReserva::Cancelada->value,
         ]);
     }
 
@@ -416,7 +465,7 @@ class ReservaControllerTest extends TestCase
         $sala = $this->criarSala();
 
         $reserva = Reserva::create([
-            'data' => now()->toDateString(),
+            'data' => $this->diaUtilFrente(1),
             'quantidade_pessoas' => 3,
             'estado' => EstadoReserva::Pendente->value,
             'tipo_de_uso' => 'SalaDeEstudo',

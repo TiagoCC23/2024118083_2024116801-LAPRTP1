@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use App\Services\Importador;
 use RuntimeException;
-use function PHPUnit\Framework\matches;
 
 class ReservaController extends Controller
 {
@@ -113,14 +112,14 @@ class ReservaController extends Controller
 
     public function alterarEstado(Request $request, Reserva $reserva)
     {
-        /* verifica se o estado enviado pertence em Enum */
         $validated = $request->validate([
             'estado' => ['required', Rule::enum(EstadoReserva::class)],
         ]);
 
-        $novoEstado =EstadoReserva::from($validated['estado']);
+        $novoEstado = EstadoReserva::from($validated['estado']);
 
-        /* Atualiza o estado */
+        Gate::authorize('alterarEstado', [$reserva, $novoEstado]);
+
         $reserva->update(['estado' => $novoEstado]);
 
         if ($novoEstado === EstadoReserva::Confirmada) {
@@ -128,7 +127,6 @@ class ReservaController extends Controller
             Mail::to($reserva->utilizador->email)->send(new ReservaAprovada($reserva));
         }
 
-        /* Volta para onde o utilizador estava*/
         return back()->with('success', 'Estado da reserva atualizado!');
     }
     public function importarCsv(Request $request, Importador $importador)

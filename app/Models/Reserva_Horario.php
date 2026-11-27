@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Reserva_Horario extends Model
 {
-    protected $table = 'horario_reserva';
-    public $timestamps = false; // -> não mexe nas datas
+    protected $table = 'reserva_horario';
+    public $timestamps = false;
     protected $fillable = ['reserva_id', 'horario_id'];
 
     public function reserva(): BelongsTo

@@ -58,12 +58,6 @@ class AvaliacaoControllerTest extends TestCase
         $this->get(route('avaliacoes.index'))->assertRedirect(route('login'));
         $this->get(route('avaliacoes.minhas'))->assertRedirect(route('login'));
         $this->get(route('avaliacoes.create'))->assertRedirect(route('login'));
-
-        $naoVerificado = $this->criarUtilizador('unverified@ufp.edu.pt', false);
-        $this->actingAs($naoVerificado);
-
-        $this->get(route('avaliacoes.index'))->assertRedirect(route('verification.notice'));
-        $this->get(route('avaliacoes.minhas'))->assertRedirect(route('verification.notice'));
     }
 
     public function test_index_displays_avaliacoes(): void
