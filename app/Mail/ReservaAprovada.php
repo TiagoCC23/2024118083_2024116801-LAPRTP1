@@ -2,10 +2,9 @@
 
 namespace App\Mail;
 
+use App\Models\Reserva;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -17,7 +16,7 @@ class ReservaAprovada extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public Reserva $reserva)
     {
         //
     }
@@ -41,5 +40,4 @@ class ReservaAprovada extends Mailable
             view: 'emails.reserva-aprovada',
         );
     }
-
 }
