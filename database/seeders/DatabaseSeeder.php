@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             SalaSeeder::class,
             HorarioSeeder::class,
             ReservaSeeder::class,
+            AvaliacaoSeeder::class,
+            OcupacaoSeeder::class,
         ]);
     }
 }

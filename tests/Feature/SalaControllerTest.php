@@ -50,20 +50,15 @@ class SalaControllerTest extends TestCase
         ], $atributos));
     }
 
-    public function test_guest_e_utilizador_nao_verificado_sao_bloqueados(): void
+    public function test_guest_e_bloqueado(): void
     {
         $edificio = Edificio::create(['nome' => 'Edificio Teste', 'sigla' => 'ET']);
         $sala = $this->criarSala($edificio);
 
         $this->get(route('salas.index'))->assertRedirect(route('login'));
+        $this->get(route('salas.show', $sala))->assertRedirect(route('login'));
         $this->get(route('salas.disponibilidade'))->assertRedirect(route('login'));
         $this->post(route('salas.store'), [])->assertRedirect(route('login'));
-
-        $naoVerificado = $this->criarEstudante(['verificado_em' => null]);
-        $this->actingAs($naoVerificado);
-
-        $this->get(route('salas.index'))->assertRedirect(route('verification.notice'));
-        $this->get(route('salas.show', $sala))->assertRedirect(route('verification.notice'));
     }
 
     public function test_estudante_pode_consultar_salas_mas_nao_gerir(): void

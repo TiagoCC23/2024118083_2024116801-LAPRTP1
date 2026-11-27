@@ -10,8 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Sala extends Model
 {
     protected $table = 'salas';
-    public $timestamps = false; // -> não mexe nas datas
-    protected $fillable = ['nome_numero', 'capacidade_maxima', 'tipo_sala', 'disponibilidade', 'piso', 'edificio_id'];
+    public $timestamps = false;
+
+    protected $fillable = [
+        'nome_numero',
+        'capacidade_maxima',
+        'tipo_sala',
+        'disponibilidade',
+        'piso',
+        'unidade_organica',
+        'edificio_id',
+    ];
 
     public function edificio(): BelongsTo
     {
@@ -23,6 +32,11 @@ class Sala extends Model
         return $this->hasMany(Reserva::class);
     }
 
+    public function ocupacoes(): HasMany
+    {
+        return $this->hasMany(Ocupacao::class);
+    }
+
     public function administradores(): BelongsToMany
     {
         return $this->belongsToMany(Utilizador::class, 'administra', 'sala_id', 'utilizador_id');
@@ -31,7 +45,9 @@ class Sala extends Model
     public function getTipoSalaLabelAttribute(): string
     {
         return match ($this->tipo_sala) {
-            'Normal' => 'Sala de Aula',
+            'SalaDeAula', 'Normal' => 'Sala de Aula',
+            'Trabalho' => 'Trabalho',
+            'Exame' => 'Exame',
             'SalaDeEstudo' => 'Sala de Estudo',
             'Laboratorio' => 'Laboratório',
             'SalaoNobre' => 'Salão Nobre',

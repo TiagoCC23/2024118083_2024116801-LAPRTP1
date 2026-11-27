@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\ImportadorOcupacoes;
+use App\Services\Importador;
 use Illuminate\Console\Command;
 use RuntimeException;
 

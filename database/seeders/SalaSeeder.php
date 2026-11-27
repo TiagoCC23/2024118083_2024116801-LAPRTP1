@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Disponibilidade;
+use App\Enums\TipoUtilizador;
 use App\Models\Edificio;
 use App\Models\Sala;
 use App\Models\Utilizador;
@@ -11,32 +13,58 @@ class SalaSeeder extends Seeder
 {
     public function run(): void
     {
-        $edificio = Edificio::where('sigla', 'FCH')->first() ?? Edificio::first();
+        $edificioUfp = Edificio::where('sigla', 'UFP')->first() ?? Edificio::first();
 
-        if (!$edificio) {
-            $this->command->error('Nenhum edifício foi encontrado! Execute o EdificioSeeder primeiro.');
+        if (!$edificioUfp) {
+            $this->command?->error('Nenhum edifício foi encontrado! Execute o EdificioSeeder primeiro.');
             return;
         }
 
-        $s1 = Sala::create([
-            'nome_numero' => 'Sala 302',
-            'tipo_sala' => 'Sala de Aula',
-            'capacidade_maxima' => 30,
-            'piso' => 3,
-            'disponibilidade' => 'disponivel',
-            'edificio_id' => $edificio->id,
-        ]);
+        $salas = [
+            [
+                'edificio_id' => $edificioUfp->id,
+                'nome_numero' => 'Sala 302',
+                'tipo_sala' => 'SalaDeAula',
+                'capacidade_maxima' => 30,
+                'piso' => 3,
+                'unidade_organica' => 'FCT',
+                'disponibilidade' => Disponibilidade::Disponivel->value,
+            ],
+            [
+                'edificio_id' => $edificioUfp->id,
+                'nome_numero' => 'Sala 204',
+                'tipo_sala' => 'Trabalho',
+                'capacidade_maxima' => 20,
+                'piso' => 2,
+                'unidade_organica' => 'FCHS',
+                'disponibilidade' => Disponibilidade::Ocupado->value,
+            ],
+        ];
 
-        $s2 = Sala::create([
-            'nome_numero' => 'Sala 204',
-            'tipo_sala' => 'Sala de Aula',
-            'capacidade_maxima' => 30,
-            'piso' => 2,
-            'disponibilidade' => 'ocupado',
-            'edificio_id' => $edificio->id,
-        ]);
+        $edificioEss = Edificio::where('sigla', 'ESS')->first();
+        if ($edificioEss) {
+            $salas[] = [
+                'edificio_id' => $edificioEss->id,
+                'nome_numero' => 'Sala 101',
+                'tipo_sala' => 'Exame',
+                'capacidade_maxima' => 40,
+                'piso' => 1,
+                'unidade_organica' => 'ESS',
+                'disponibilidade' => Disponibilidade::Disponivel->value,
+            ];
+        }
 
-        $admin = Utilizador::where('tipo_user', 'admin')->first();
+        foreach ($salas as $sala) {
+            Sala::firstOrCreate(
+                [
+                    'edificio_id' => $sala['edificio_id'],
+                    'nome_numero' => $sala['nome_numero'],
+                ],
+                $sala
+            );
+        }
+
+        $admin = Utilizador::where('tipo_user', TipoUtilizador::Admin->value)->first();
 
         if ($admin && $admin->edificio_id) {
             $admin->salasAdministradas()->sync(
