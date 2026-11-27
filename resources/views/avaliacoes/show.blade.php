@@ -13,7 +13,9 @@
 
         <div class="d-flex gap-2">
             <a href="{{ route('avaliacoes.index') }}" class="btn btn-glass-secondary">Voltar</a>
-            <a href="{{ route('avaliacoes.edit', $avaliacao) }}" class="btn btn-minimal">Editar</a>
+            @if($avaliacao->reserva?->utilizador_id === auth()->id())
+                <a href="{{ route('avaliacoes.edit', $avaliacao) }}" class="btn btn-minimal">Editar</a>
+            @endif
         </div>
     </div>
 @endsection

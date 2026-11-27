@@ -63,15 +63,25 @@
                 const inputData = document.getElementById('input-data-selecionada');
                 const badgeData = document.getElementById('data-selecionada-badge');
 
+                const dataInicial = new Date();
+                if (dataInicial.getDay() === 0) { // se for Dom, ele pula para Seg
+                    dataInicial.setDate(dataInicial.getDate() + 1);
+                }
+
                 window.flatpickr(calendarInline, {
                     inline: true,
+                    locale: "pt",
+                    monthSelectorType: "static",
                     minDate: "today",
                     dateFormat: "Y-m-d",
                     defaultDate: "today",
                     onChange: function (selectedDates, dateStr) {
                         if (inputData) inputData.value = dateStr;
                         if (badgeData && selectedDates[0]) {
-                            badgeData.innerText = selectedDates[0].toLocaleDateString('pt-PT');
+                            const hoje = new Date().toDateString();
+                            badgeData.innerText = selectedDates[0].toDateString() === hoje
+                                ? 'Hoje'
+                                : selectedDates[0].toLocaleDateString('pt-PT');
                         }
                     }
                 });

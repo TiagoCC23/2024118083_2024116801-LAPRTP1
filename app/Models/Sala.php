@@ -27,4 +27,16 @@ class Sala extends Model
     {
         return $this->belongsToMany(Utilizador::class, 'administra', 'sala_id', 'utilizador_id');
     }
+
+    public function getTipoSalaLabelAttribute(): string
+    {
+        return match ($this->tipo_sala) {
+            'Normal' => 'Sala de Aula',
+            'SalaDeEstudo' => 'Sala de Estudo',
+            'Laboratorio' => 'Laboratório',
+            'SalaoNobre' => 'Salão Nobre',
+            'Outro' => 'Outro',
+            default => $this->tipo_sala,
+        };
+    }
 }

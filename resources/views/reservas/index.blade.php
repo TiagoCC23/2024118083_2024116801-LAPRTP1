@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <!-- Filtro de Pesquisa -->
                 <form method="GET" action="{{ route('reservas.index') }}" class="d-flex gap-2">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Pesquisar..." class="form-control glass-input py-1 px-3 small">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Pesquisar sala..." class="form-control glass-input py-1 px-3 small">
                     <button type="submit" class="btn btn-glass-secondary">Filtrar</button>
                 </form>
 
@@ -53,9 +53,11 @@
                                 {{ $reserva->data?->format('d/m/Y') }}
                             </td>
                             <td>
-                                @foreach($reserva->horarios as $h)
-                                    <span class="badge bg-white bg-opacity-10 text-white me-1">{{ substr($h->hora_inicio, 0, 5) }}</span>
-                                @endforeach
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach($reserva->horarios as $h)
+                                        <span class="badge bg-white bg-opacity-10 text-white">{{ $h->intervalo }}</span>
+                                    @endforeach
+                                </div>
                             </td>
                             <td class="text-white-50">
                                 {{ $reserva->sala->edificio->nome ?? '—' }}
@@ -64,17 +66,15 @@
                                 {{ $reserva->sala->nome_numero ?? '—' }}
                             </td>
                             <td class="text-white-50">
-                                {{ $reserva->tipo_de_uso }}
+                                {{ $reserva->tipo_de_uso_label }}
                             </td>
                             <td class="text-white-50">
                                 <i class="bi bi-people me-1"></i> {{ $reserva->quantidade_pessoas }}
                             </td>
                             <td class="text-center">
-                                {{-- Uso do Componente Reutilizável Blade (Aula 06) --}}
                                 <x-badge-status :estado="$reserva->estado" />
                             </td>
                             <td class="text-end">
-                                {{-- Autorização na Vista com @can (Aula 08, slide 10) --}}
                                 @can('update', $reserva)
                                     <a href="{{ route('reservas.edit', $reserva) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2">
                                         <i class="bi bi-pencil"></i>

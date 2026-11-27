@@ -34,13 +34,19 @@
                             <td class="text-warning fw-bold">{{ $avaliacao->nota }}/5</td>
                             <td class="text-white-50">{{ $avaliacao->comentario ?? '—' }}</td>
                             <td class="text-end">
-                                <a href="{{ route('avaliacoes.show', $avaliacao) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2"><i class="bi bi-eye"></i></a>
-                                <a href="{{ route('avaliacoes.edit', $avaliacao) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2"><i class="bi bi-pencil"></i></a>
-                                <form action="{{ route('avaliacoes.destroy', $avaliacao) }}" method="POST" class="d-inline" onsubmit="return confirm('Eliminar esta avaliação?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0"><i class="bi bi-trash"></i></button>
-                                </form>
+                                <a href="{{ route('avaliacoes.show', $avaliacao) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2" title="Ver"><i class="bi bi-eye"></i></a>
+
+                                @if($avaliacao->reserva?->utilizador_id === auth()->id())
+                                    <a href="{{ route('avaliacoes.edit', $avaliacao) }}" class="btn btn-sm btn-link text-white-50 p-0 me-2" title="Editar"><i class="bi bi-pencil"></i></a>
+                                @endif
+
+                                @if($avaliacao->reserva?->utilizador_id === auth()->id() || auth()->user()?->isAdmin())
+                                    <form action="{{ route('avaliacoes.destroy', $avaliacao) }}" method="POST" class="d-inline" onsubmit="return confirm('Eliminar esta avaliação?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0" title="Eliminar"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
