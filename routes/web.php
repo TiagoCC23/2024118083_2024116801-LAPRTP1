@@ -7,15 +7,13 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\SalaController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 
-Route::get('/', function () {
-    return view('auth.auth');
-});
 
 // 2. Rotas de Autenticação
 Route::middleware(['guest'])->group(function () {
+    Route::get('/', function () {
+            return view('auth.auth');
+    });
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 
@@ -24,46 +22,28 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
-    Route::middleware('google.auth')->group(function (){
-        Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
-        Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
+Route::middleware(['google.auth'])->group(function (){
+    Route::get('/registo', [AuthController::class, 'showRegisto'])->name('register');
+    Route::post('/registo', [AuthController::class, 'signin'])->name('auth.signin');
     });
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/conta/eliminar', [AuthController::class, 'deleteAccount'])->name('conta.delete');
-});
-
-/* Momento da verificaçao do email*/
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-/* Rota para quando o utilizador clica no link do email */
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill(); /* Marca como verificado na base de dados */
-    return redirect('/')->with('success', 'Email verificado com sucesso');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-/* Rota para reenviar o email */
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Link de verificação reenviado!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
 
 // 3. Resources - Admin
-Route::middleware(['auth', 'email.verificado', 'admin'])->group(function (){
+Route::middleware(['admin'])->group(function () {
     Route::resource('edificios', EdificioController::class)->parameters(['edificios' => 'edificio'])->except(['index', 'show']);
     Route::resource('salas', SalaController::class)->parameters(['salas' => 'sala'])->except(['index', 'show']);
     Route::resource('horarios', HorarioController::class)->parameters(['horarios' => 'horario'])->except(['index', 'show']);
-    /* TODO FALTA ADICIONAR O PAINEL ADMIN */
+    Route::post('/reservas/importar.csv', [ReservaController::class, 'importarCsv'])->name('reservas.importar');
+    });
 });
 
 // 3. Resources - Users
 
-Route::middleware(['auth', 'email.verificado'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/home', function () {
         return view('home');
     })->name('home');

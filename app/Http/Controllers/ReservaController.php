@@ -7,10 +7,17 @@ use App\Models\Horario;
 use App\Models\Reserva;
 use App\Models\Sala;
 use App\Enums\EstadoReserva;
+use App\Mail\ReservaCriada;
+use App\Mail\ReservaAprovada;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use App\Services\Importador;
+use RuntimeException;
+use function PHPUnit\Framework\matches;
 
 class ReservaController extends Controller
 {
@@ -111,12 +118,46 @@ class ReservaController extends Controller
             'estado' => ['required', Rule::enum(EstadoReserva::class)],
         ]);
 
+        $novoEstado =EstadoReserva::from($validated['estado']);
+
         /* Atualiza o estado */
-        $reserva->update(['estado' => EstadoReserva::from($validated['estado']),]);
+        $reserva->update(['estado' => $novoEstado]);
+
+        if($novoEstado === EstadoReserva::Confirmada){
+            $reserva->load(['utilizador', 'sala']);
+            Mail::to($reserva->utilizador->email)->send(new ReservaAprovada($reserva));
+        }
 
         /* Volta para onde o utilizador estava*/
         return back()->with('success', 'Estado da reserva atualizado!');
     }
+    public function importarCsv(Request $request, Importador $importador)
+    {
+        $request->validate([
+            'ficheiros'   => ['required', 'array'],
+            'ficheiros.*' => ['file', 'mimes:csv,txt'],
+        ]);
+
+        $totalImportadas = 0;
+        $ficheirosIgnorados = [];
+
+        /* Percorre os ficheiros e tenta abri-los */
+        foreach ($request->file('ficheiros') as $ficheiro) {
+            try {
+                $totalImportadas += $importador->importar($ficheiro->getRealPath());
+            } catch (RuntimeException $e) {
+                $ficheirosIgnorados[] = $ficheiro->getClientOriginalName() . " ({$e->getMessage()})";
+            }
+        }
+
+        $msg = "Importação concluída com sucesso: {$totalImportadas} ocupações processadas.";
+        if (!empty($ficheirosIgnorados)) {
+            $msg .= ' Ignorados: ' . implode(', ', $ficheirosIgnorados);
+        }
+
+        return back()->with('success', $msg);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -170,6 +211,8 @@ class ReservaController extends Controller
         ]);
 
         $reserva->horarios()->sync($validatedData['horarios']);
+
+        Mail::to($request->user()->email)->send(new ReservaCriada($reserva));
 
         return redirect()->route('reservas.index')->with('ok', 'Reserva criada com sucesso!');
     }
