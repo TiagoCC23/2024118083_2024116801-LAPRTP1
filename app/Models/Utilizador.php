@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TipoUtilizador;
 use App\Models\Concerns\Atualizacoes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Utilizador extends Authenticatable implements MustVerifyEmail
 {
-    use SoftDeletes, Atualizacoes, Notifiable;
+    use SoftDeletes, Atualizacoes, Notifiable, HasFactory;
 
     protected $table = 'utilizadores';
     protected $fillable = ['nome', 'email', 'google_id' ,  'verificado_em', 'password_hash', 'tipo_user', 'edificio_id'];

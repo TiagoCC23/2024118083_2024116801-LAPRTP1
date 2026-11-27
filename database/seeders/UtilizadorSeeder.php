@@ -36,5 +36,6 @@ class UtilizadorSeeder extends Seeder
             'tipo_user' => TipoUtilizador::Estudante, // Enum
             'verificado_em' => now(),
         ]);
+        Utilizador::factory(1000)->create();
     }
 }
