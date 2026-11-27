@@ -24,9 +24,9 @@
         @if (auth()->user()->tipo_user === \App\Enums\TipoUtilizador::Admin)
             <form action="{{ route('reservas.importar') }}" method="POST" enctype="multipart/form-data" class="d-inline-flex align-items-center gap-2">
                 @csrf
-                <input type="file" name="ficheiros[]" accept=".csv" multiple required class="form-control form-control-sm">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    Importar CSV
+                <input type="file" name="ficheiros[]" accept=".csv" multiple required class="input-glass-csv">
+                <button type="submit" class="btn-glass-csv">
+                    <i class="bi bi-upload me-1"></i> Importar CSV
                 </button>
             </form>
         @endif
