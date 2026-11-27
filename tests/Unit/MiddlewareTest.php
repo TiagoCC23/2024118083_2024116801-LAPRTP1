@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Enums\TipoUtilizador;
 use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\GoogleAuth;
 use App\Models\Utilizador;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,37 +62,33 @@ class MiddlewareTest extends TestCase
         $this->assertSame('OK', $response->getContent());
     }
 
-    public function test_check_email_verificado_redirects_unverified_user(): void
+    public function test_google_auth_redirects_without_google_session(): void
     {
-
-        $user = new Utilizador(['verificado_em' => null]);
-
-        $request = Request::create('/home', 'GET');
-        $request->setUserResolver(fn () => $user);
+        $middleware = new GoogleAuth();
+        $request = Request::create('/registo', 'GET');
+        $request->setLaravelSession($this->app['session']->driver());
 
         $response = $middleware->handle($request, fn () => new Response('OK', 200));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertSame(route('verification.notice'), $response->getTargetUrl());
+        $this->assertSame(route('login'), $response->getTargetUrl());
     }
 
-    public function test_check_email_verificado_allows_verified_user_and_guest(): void
+    public function test_google_auth_allows_with_google_session(): void
     {
-        $middleware = new CheckEmailVerificado();
+        $middleware = new GoogleAuth();
+        $request = Request::create('/registo', 'GET');
+        $session = $this->app['session']->driver();
+        $session->put('google_registo', [
+            'nome' => 'Aluno UFP',
+            'email' => 'aluno@ufp.edu.pt',
+            'google_id' => 'google-123',
+        ]);
+        $request->setLaravelSession($session);
 
-        // Utilizador verificado
-        $verified = new Utilizador(['verificado_em' => now()]);
-        $requestVerified = Request::create('/home', 'GET');
-        $requestVerified->setUserResolver(fn () => $verified);
+        $response = $middleware->handle($request, fn () => new Response('OK', 200));
 
-        $responseVerified = $middleware->handle($requestVerified, fn () => new Response('OK', 200));
-        $this->assertSame(200, $responseVerified->getStatusCode());
-
-        // Guest (passa para o próximo middleware)
-        $requestGuest = Request::create('/home', 'GET');
-        $requestGuest->setUserResolver(fn () => null);
-
-        $responseGuest = $middleware->handle($requestGuest, fn () => new Response('OK', 200));
-        $this->assertSame(200, $responseGuest->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('OK', $response->getContent());
     }
 }

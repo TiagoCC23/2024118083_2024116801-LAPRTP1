@@ -48,14 +48,6 @@ class EdificioControllerTest extends TestCase
         $this->delete(route('edificios.destroy', $edificio))->assertRedirect(route('login'));
     }
 
-    public function test_utilizador_nao_verificado_e_redirecionado_para_verificacao(): void
-    {
-        $user = $this->criarEstudante(['verificado_em' => null]);
-        $this->actingAs($user);
-
-        $this->get(route('edificios.index'))->assertRedirect(route('verification.notice'));
-    }
-
     public function test_estudante_pode_ver_mas_nao_gerir_edificios(): void
     {
         $estudante = $this->criarEstudante();

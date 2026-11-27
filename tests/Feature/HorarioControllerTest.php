@@ -34,18 +34,13 @@ class HorarioControllerTest extends TestCase
         ], $atributos));
     }
 
-    public function test_guest_e_nao_verificado_sao_bloqueados(): void
+    public function test_guest_e_bloqueado(): void
     {
         $horario = Horario::create(['hora_inicio' => '08:00:00', 'hora_fim' => '09:00:00']);
 
         $this->get(route('horarios.index'))->assertRedirect(route('login'));
+        $this->get(route('horarios.show', $horario))->assertRedirect(route('login'));
         $this->get(route('horarios.create'))->assertRedirect(route('login'));
-
-        $naoVerificado = $this->criarEstudante(['verificado_em' => null]);
-        $this->actingAs($naoVerificado);
-
-        $this->get(route('horarios.index'))->assertRedirect(route('verification.notice'));
-        $this->get(route('horarios.show', $horario))->assertRedirect(route('verification.notice'));
     }
 
     public function test_estudante_pode_ver_horarios_mas_nao_gerir(): void

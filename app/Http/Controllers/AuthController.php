@@ -53,7 +53,7 @@ class AuthController extends Controller{
             'google_id'=> $googleData['google_id'],
             'password_hash' => Hash::make($dados['password']), /* faz o hash */
             'verificado_em' =>now(),
-            /*'tipo_user' => TipoUtilizador::Estudante, depois eu apago ou não*/
+            'tipo_user' => TipoUtilizador::Estudante,
         ]);
         $request->session()->forget('google_registo');
         Auth::login($utilizador);
