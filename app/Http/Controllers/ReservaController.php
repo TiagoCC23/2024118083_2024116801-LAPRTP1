@@ -123,8 +123,8 @@ class ReservaController extends Controller
         /* Atualiza o estado */
         $reserva->update(['estado' => $novoEstado]);
 
-        if($novoEstado === EstadoReserva::Confirmada){
-            $reserva->load(['utilizador', 'sala']);
+        if ($novoEstado === EstadoReserva::Confirmada) {
+            $reserva->load(['utilizador', 'sala', 'horarios']);
             Mail::to($reserva->utilizador->email)->send(new ReservaAprovada($reserva));
         }
 
@@ -211,6 +211,7 @@ class ReservaController extends Controller
         ]);
 
         $reserva->horarios()->sync($validatedData['horarios']);
+        $reserva->load(['utilizador', 'sala', 'horarios']);
 
         Mail::to($request->user()->email)->send(new ReservaCriada($reserva));
 
