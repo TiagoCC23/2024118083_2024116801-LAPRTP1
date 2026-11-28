@@ -15,10 +15,17 @@ class OcupacaoSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_ocupacao_seeder_cria_ocupacao_padrao_quando_nao_ha_csvs(): void
+    protected function tearDown(): void
+    {
+        OcupacaoSeeder::$diretorioCustom = null;
+        parent::tearDown();
+    }
+
+    private function criarSala(): Sala
     {
         $edificio = Edificio::create(['nome' => 'Edifício UFP', 'sigla' => 'UFP']);
-        $sala = Sala::create([
+
+        return Sala::create([
             'nome_numero' => 'Sala 302',
             'capacidade_maxima' => 30,
             'tipo_sala' => 'SalaDeAula',
@@ -27,47 +34,59 @@ class OcupacaoSeederTest extends TestCase
             'disponibilidade' => 'disponivel',
             'edificio_id' => $edificio->id,
         ]);
+    }
 
-        $this->seed(OcupacaoSeeder::class);
+    public function test_ocupacao_seeder_cria_ocupacao_padrao_quando_nao_ha_csvs(): void
+    {
+        $sala = $this->criarSala();
+        $dirVazio = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ufp_vazio_' . uniqid();
+        mkdir($dirVazio, 0777, true);
 
-        $this->assertDatabaseCount('ocupacoes', 1);
-        $ocupacao = Ocupacao::with('sala')->firstOrFail();
+        try {
+            OcupacaoSeeder::$diretorioCustom = $dirVazio;
+            $this->seed(OcupacaoSeeder::class);
 
-        $this->assertSame($sala->id, $ocupacao->sala->id);
-        $this->assertSame('Aula', $ocupacao->tipo_ocupacao);
-        $this->assertSame('Confirmada', $ocupacao->estado);
-        $this->assertFalse($ocupacao->data_inicio->isSunday());
-        $this->assertTrue($ocupacao->data_fim->greaterThan($ocupacao->data_inicio));
+            $this->assertDatabaseCount('ocupacoes', 1);
+            $ocupacao = Ocupacao::with('sala')->firstOrFail();
+
+            $this->assertSame($sala->id, $ocupacao->sala->id);
+            $this->assertSame('Aula', $ocupacao->tipo_ocupacao);
+            $this->assertSame('Confirmada', $ocupacao->estado);
+            $this->assertFalse($ocupacao->data_inicio->isSunday());
+            $this->assertTrue($ocupacao->data_fim->greaterThan($ocupacao->data_inicio));
+        } finally {
+            if (is_dir($dirVazio)) {
+                rmdir($dirVazio);
+            }
+        }
     }
 
     public function test_ocupacao_seeder_importa_ficheiros_csv_quando_existem(): void
     {
-        $diretorio = database_path('seeders/data');
-        $diretorioCriado = !is_dir($diretorio);
+        $this->criarSala();
 
-        if ($diretorioCriado) {
-            mkdir($diretorio, 0777, true);
-        }
-
-        $ficheiroTmp = $diretorio . '/teste_ocupacoes.csv';
+        $dirTmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ufp_csvs_' . uniqid();
+        mkdir($dirTmp, 0777, true);
+        $ficheiroTmp = $dirTmp . DIRECTORY_SEPARATOR . 'teste_ocupacoes.csv';
         file_put_contents($ficheiroTmp, "Data de Início;Data de Fim\n");
 
         try {
             $importadorMock = Mockery::mock(Importador::class);
             $importadorMock->shouldReceive('importar')
                 ->once()
-                ->with($ficheiroTmp)
+                ->with(Mockery::on(fn ($path) => basename($path) === 'teste_ocupacoes.csv'))
                 ->andReturn(10);
 
             $this->app->instance(Importador::class, $importadorMock);
 
+            OcupacaoSeeder::$diretorioCustom = $dirTmp;
             $this->seed(OcupacaoSeeder::class);
         } finally {
             if (file_exists($ficheiroTmp)) {
                 unlink($ficheiroTmp);
             }
-            if ($diretorioCriado && is_dir($diretorio)) {
-                rmdir($diretorio);
+            if (is_dir($dirTmp)) {
+                rmdir($dirTmp);
             }
         }
     }
