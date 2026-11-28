@@ -9,8 +9,8 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
-        "laravel/framework": "^13.17",
+        "php": "^8.5",
+        "laravel/framework": "^v13.34.0",
         "laravel/socialite": "^5.33",
         "laravel/tinker": "^3.0"
     },

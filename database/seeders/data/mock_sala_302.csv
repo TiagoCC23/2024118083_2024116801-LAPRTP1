@@ -1,0 +1,11 @@
+Mapa de Ocupações de Espaço;Universidade Fernando Pessoa
+Designação do Espaço;Sala 302
+Período;30-11-2026 a 04-12-2026
+
+Data de Início;Data de Fim;Tipo de Ocupação;Código da Disciplina;Nome da Disciplina;Ciclo da Disciplina;Descrição da Reserva;Estado;Pessoa Responsável;Observações
+30-11-2026 09:00;30-11-2026 11:00;Aula;EI201;Engenharia de Software;1º Ciclo;Aula Teórica;Confirmada;Prof. Carlos Almeida;Projetor necessário
+30-11-2026 14:00;30-11-2026 16:00;Aula;EI204;Bases de Dados;1º Ciclo;Aula Prática;Confirmada;Prof. Ana Ferreira;
+01-12-2026 10:00;01-12-2026 12:00;Aula;EI302;Programação Web;1º Ciclo;Laboratório Laravel;Confirmada;Prof. Rui Silva;Trazer portátil
+02-12-2026 15:00;02-12-2026 17:00;Seminário;;;2º Ciclo;Palestra Cibersegurança;Confirmada;Dr. Miguel Costa;Aberto a estudantes
+03-12-2026 09:00;03-12-2026 12:00;Exame;EI201;Engenharia de Software;1º Ciclo;Frequência 1;Confirmada;Prof. Carlos Almeida;Distribuição alternada
+04-12-2026 14:00;04-12-2026 15:00;Defesa;EI400;Projeto Final;1º Ciclo;Apresentação TP1;Pendente;Prof. Sofia Martins;Confirmar equipamento áudio

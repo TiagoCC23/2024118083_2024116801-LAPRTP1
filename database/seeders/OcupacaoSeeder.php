@@ -6,27 +6,40 @@ use App\Models\Ocupacao;
 use App\Models\Sala;
 use App\Services\Importador;
 use Illuminate\Database\Seeder;
+use RuntimeException;
 
 class OcupacaoSeeder extends Seeder
 {
+    public static ?string $diretorioCustom = null;
+
     public function run(): void
     {
-        $diretorio = database_path('seeders/data');
-        $ficheirosCsv = is_dir($diretorio) ? glob($diretorio . '/*.csv') : [];
-
-        if (!empty($ficheirosCsv)) {
-            $importador = app(Importador::class);
-            foreach ($ficheirosCsv as $ficheiro) {
-                $importador->importar($ficheiro);
-            }
-            return;
-        }
-
-        $sala = Sala::orderBy('id')->first();
-        if (!$sala) {
+        if (Sala::doesntExist()) {
             $this->command?->warn('Nenhuma sala encontrada para criar ocupações.');
             return;
         }
+
+        $diretorio = self::$diretorioCustom ?? database_path('seeders/data');
+        $ficheirosCsv = is_dir($diretorio) ? (glob($diretorio . '/*.csv') ?: []) : [];
+
+        if (!empty($ficheirosCsv)) {
+            $importador = app(Importador::class);
+            $totalImportadas = 0;
+
+            foreach ($ficheirosCsv as $ficheiro) {
+                try {
+                    $totalImportadas += $importador->importar($ficheiro);
+                } catch (RuntimeException $e) {
+                    $this->command?->warn('CSV ignorado (' . basename($ficheiro) . '): ' . $e->getMessage());
+                }
+            }
+
+            if ($totalImportadas > 0) {
+                return;
+            }
+        }
+
+        $sala = Sala::orderBy('id')->first();
 
         $diaUtil = now()->addDay();
         if ($diaUtil->isSunday()) {

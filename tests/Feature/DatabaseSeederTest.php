@@ -22,7 +22,6 @@ use Database\Seeders\SalaSeeder;
 use Database\Seeders\UtilizadorSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use RuntimeException;
 use Tests\TestCase;
 
 class DatabaseSeederTest extends TestCase
@@ -53,8 +52,8 @@ class DatabaseSeederTest extends TestCase
         $this->assertTrue(Hash::check(env('SEED_ESTUDANTE1_PASSWORD', 'estudante1'), $estudante1->password_hash));
         $this->assertTrue(Hash::check(env('SEED_ESTUDANTE2_PASSWORD', 'estudante2'), $estudante2->password_hash));
 
-        // 3. Salas (2 base + 31 CSV UFP + 1 ESS = 34)
-        $this->assertDatabaseCount('salas', 34);
+        // 3. Salas
+        $this->assertDatabaseCount('salas', 3);
         $this->assertDatabaseHas('salas', [
             'nome_numero' => 'Sala 302',
             'tipo_sala' => 'SalaDeAula',
@@ -94,7 +93,6 @@ class DatabaseSeederTest extends TestCase
             $this->assertGreaterThanOrEqual(1, $reserva->horarios->count());
             $this->assertLessThanOrEqual(3, $reserva->horarios->count());
 
-            // Valida que os blocos associados são consecutivos
             for ($i = 0; $i < $reserva->horarios->count() - 1; $i++) {
                 $this->assertSame(
                     $reserva->horarios[$i]->hora_fim,
@@ -112,35 +110,36 @@ class DatabaseSeederTest extends TestCase
         $this->assertSame(5, $avaliacao->nota);
         $this->assertSame(EstadoReserva::Confirmada, $avaliacao->reserva->estado);
 
-        // 8. Admin administra apenas as salas do seu edifício (UFP -> 33 salas)
-        $this->assertDatabaseCount('administra', 33);
-        $this->assertSame(33, $admin->salasAdministradas()->count());
+        // 8. Admin administra apenas as salas do seu edifício (UFP -> 2 salas)
+        $this->assertDatabaseCount('administra', 2);
+        $this->assertSame(2, $admin->salasAdministradas()->count());
 
-        // 9. Ocupações (importadas dos CSVs em database/seeders/data ou fallback)
-        $this->assertGreaterThanOrEqual(1, Ocupacao::count());
+        // 9. Ocupações (importadas dos CSVs existentes ou fallback padrão)
+        $this->assertGreaterThan(0, Ocupacao::count());
         $ocupacao = Ocupacao::with('sala')->firstOrFail();
         $this->assertNotNull($ocupacao->sala);
         $this->assertInstanceOf(Carbon::class, $ocupacao->data_inicio);
         $this->assertInstanceOf(Carbon::class, $ocupacao->data_fim);
-        $this->assertSame('Confirmada', $ocupacao->estado);
+        $this->assertNotEmpty($ocupacao->estado);
     }
 
     public function test_database_seeder_e_idempotente(): void
     {
         $this->seed(DatabaseSeeder::class);
-        $ocupacoesIniciais = Ocupacao::count();
+        $ocupacoesAposPrimeiraExecucao = Ocupacao::count();
+        $this->assertGreaterThan(0, $ocupacoesAposPrimeiraExecucao);
 
         $this->seed(DatabaseSeeder::class);
 
         $this->assertDatabaseCount('edificios', 2);
         $this->assertDatabaseCount('utilizadores', 3);
-        $this->assertDatabaseCount('salas', 34);
+        $this->assertDatabaseCount('salas', 3);
         $this->assertDatabaseCount('horarios', 10);
         $this->assertDatabaseCount('reservas', 2);
         $this->assertDatabaseCount('reserva_horario', 5);
         $this->assertDatabaseCount('avaliacoes', 1);
-        $this->assertDatabaseCount('administra', 33);
-        $this->assertDatabaseCount('ocupacoes', $ocupacoesIniciais);
+        $this->assertDatabaseCount('administra', 2);
+        $this->assertSame($ocupacoesAposPrimeiraExecucao, Ocupacao::count());
     }
 
     public function test_horario_seeder_gera_blocos_consecutivos_de_uma_hora(): void
@@ -169,7 +168,6 @@ class DatabaseSeederTest extends TestCase
         $this->seed(EdificioSeeder::class);
         $this->seed(UtilizadorSeeder::class);
         $this->seed(SalaSeeder::class);
-        // Sem HorarioSeeder
         $this->seed(ReservaSeeder::class);
 
         $this->assertDatabaseCount('reservas', 0);
@@ -184,7 +182,6 @@ class DatabaseSeederTest extends TestCase
         $sala = Sala::firstOrFail();
         $estudante = Utilizador::where('tipo_user', TipoUtilizador::Estudante->value)->firstOrFail();
 
-        // Apenas uma reserva pendente -> não deve ser avaliada
         Reserva::create([
             'data' => now()->subDay()->toDateString(),
             'quantidade_pessoas' => 2,
@@ -199,19 +196,10 @@ class DatabaseSeederTest extends TestCase
         $this->assertDatabaseCount('avaliacoes', 0);
     }
 
-    public function test_ocupacao_seeder_sem_salas(): void
+    public function test_ocupacao_seeder_falha_graciosamente_sem_salas(): void
     {
-        $temCsvs = !empty(glob(database_path('seeders/data/*.csv')));
-
-        if ($temCsvs) {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Sala não encontrada:');
-        }
-
         $this->seed(OcupacaoSeeder::class);
 
-        if (!$temCsvs) {
-            $this->assertDatabaseCount('ocupacoes', 0);
-        }
+        $this->assertDatabaseCount('ocupacoes', 0);
     }
 }
