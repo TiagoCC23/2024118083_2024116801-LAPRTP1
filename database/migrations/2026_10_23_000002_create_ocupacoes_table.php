@@ -14,10 +14,10 @@ return new class extends Migration { // -> para importar o csv
             $t->string('tipo_ocupacao', 50);
             $t->string('codigo_disciplina', 20)->nullable();
             $t->string('nome_disciplina', 150)->nullable();
-            $t->string('ciclo_disciplina', 30)->nullable();
-            $t->string('descricao_reserva', 150)->nullable();
+            $t->string('ciclo_disciplina', 100)->nullable();
+            $t->string('descricao_reserva')->nullable();
             $t->string('estado', 30);
-            $t->string('pessoa_responsavel', 150)->nullable();
+            $t->string('pessoa_responsavel', 255)->nullable();
             $t->text('observacoes')->nullable();
             $t->foreignId('sala_id')->constrained('salas')->cascadeOnDelete();
             $t->index(['sala_id', 'data_inicio', 'data_fim']);

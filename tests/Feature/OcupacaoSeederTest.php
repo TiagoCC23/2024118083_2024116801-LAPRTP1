@@ -6,6 +6,7 @@ use App\Models\Edificio;
 use App\Models\Ocupacao;
 use App\Models\Sala;
 use App\Services\Importador;
+use Database\Seeders\EdificioSeeder;
 use Database\Seeders\OcupacaoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
